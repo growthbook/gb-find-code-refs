@@ -14,38 +14,22 @@ const (
 	minFlagKeyLen = 3 // Minimum flag key length helps reduce the number of false positives
 )
 
-// TODO remove dependency on LD API
-func GetFlagKeys(opts options.Options, repoParams ld.RepoParams) map[string][]string {
-	isDryRun := opts.DryRun
-	ldApi := ld.InitApiClient(ld.ApiOptions{ApiKey: opts.AccessToken, BaseUri: opts.BaseUri, UserAgent: helpers.GetUserAgent(opts.UserAgent)})
+func GetFlagKeys(opts options.Options, repoParams ld.RepoParams) []string {
 	ignoreServiceErrors := opts.IgnoreServiceErrors
-
-	if !isDryRun {
-		err := ldApi.MaybeUpsertCodeReferenceRepository(repoParams)
-		if err != nil {
-			helpers.FatalServiceError(err, ignoreServiceErrors)
-		}
+	flags, err := getFlags()
+	if err != nil {
+		helpers.FatalServiceError(fmt.Errorf("could not parse flag keys: %w", err), ignoreServiceErrors)
 	}
 
-	flagKeys := make(map[string][]string)
-	for _, proj := range opts.Projects {
-		flags, err := getFlags(ldApi, proj.Key)
-		if err != nil {
-			helpers.FatalServiceError(fmt.Errorf("could not retrieve flag keys from LaunchDarkly for project `%s`: %w", proj.Key, err), ignoreServiceErrors)
-		}
-
-		filteredFlags, omittedFlags := filterShortFlagKeys(flags)
-		if len(filteredFlags) == 0 {
-			log.Info.Printf("no flag keys longer than the minimum flag key length (%v) were found for project: %s, exiting early",
-				minFlagKeyLen, proj.Key)
-			os.Exit(0)
-		} else if len(omittedFlags) > 0 {
-			log.Warning.Printf("omitting %d flags with keys less than minimum (%d) for project: %s", len(omittedFlags), minFlagKeyLen, proj.Key)
-		}
-		flagKeys[proj.Key] = filteredFlags
+	filteredFlags, omittedFlags := filterShortFlagKeys(flags)
+	if len(filteredFlags) == 0 {
+		log.Info.Printf("no flag keys longer than the minimum flag key length (%v) were found, exiting early",
+			minFlagKeyLen)
+		os.Exit(0)
+	} else if len(omittedFlags) > 0 {
+		log.Warning.Printf("omitting %d flags with keys less than minimum (%d) for project: %s", len(omittedFlags), minFlagKeyLen)
 	}
-
-	return flagKeys
+	return filteredFlags
 }
 
 // Very short flag keys lead to many false positives when searching in code,
@@ -63,10 +47,7 @@ func filterShortFlagKeys(flags []string) (filtered []string, omitted []string) {
 	return filteredFlags, omittedFlags
 }
 
-func getFlags(ldApi ld.ApiClient, projKey string) ([]string, error) {
-	flags, err := ldApi.GetFlagKeyList(projKey)
-	if err != nil {
-		return nil, err
-	}
-	return flags, nil
+func getFlags() ([]string, error) {
+	// TODO read from stdin or file (path provided as arg)
+	return []string{"feature-list-realtime-graphs", "github-integration"}, nil
 }

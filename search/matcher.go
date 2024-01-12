@@ -14,21 +14,19 @@ type Matcher struct {
 	ctxLines int
 }
 
-func NewMultiProjectMatcher(opts options.Options, dir string, flagKeys map[string][]string) Matcher {
-	elements := make([]ElementMatcher, 0, len(opts.Projects))
+func NewMultiProjectMatcher(opts options.Options, dir string, flagKeys []string) Matcher {
+	elements := make([]ElementMatcher, 0, 1)
 	delimiters := strings.Join(GetDelimiters(opts), "")
 
-	for _, project := range opts.Projects {
-		projectFlags := flagKeys[project.Key]
-		projectAliases := opts.Aliases
-		projectAliases = append(projectAliases, project.Aliases...)
-		aliasesByFlagKey, err := aliases.GenerateAliases(projectFlags, projectAliases, dir)
-		if err != nil {
-			log.Error.Fatalf("failed to generate aliases: %s for project: %s", err, project.Key)
-		}
-
-		elements = append(elements, NewElementMatcher(project.Key, project.Dir, delimiters, projectFlags, aliasesByFlagKey))
+	projectFlags := flagKeys
+	projectAliases := opts.Aliases
+	// projectAliases = append(projectAliases, project.Aliases...)
+	aliasesByFlagKey, err := aliases.GenerateAliases(projectFlags, projectAliases, dir)
+	if err != nil {
+		log.Error.Fatalf("failed to generate aliases: %s", err)
 	}
+
+	elements = append(elements, NewElementMatcher("default", "", delimiters, projectFlags, aliasesByFlagKey))
 
 	return Matcher{
 		ctxLines: opts.ContextLines,

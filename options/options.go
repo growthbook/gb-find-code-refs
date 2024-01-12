@@ -43,16 +43,17 @@ type Project struct {
 	Dir     string  `mapstructure:"dir"`
 	Aliases []Alias `mapstructure:"aliases"`
 }
+
+// TODO audit
 type Options struct {
-	AccessToken         string `mapstructure:"accessToken"`
-	BaseUri             string `mapstructure:"baseUri"`
-	Branch              string `mapstructure:"branch"`
-	CommitUrlTemplate   string `mapstructure:"commitUrlTemplate"`
-	DefaultBranch       string `mapstructure:"defaultBranch"`
-	Dir                 string `mapstructure:"dir" yaml:"-"`
-	HunkUrlTemplate     string `mapstructure:"hunkUrlTemplate"`
-	OutDir              string `mapstructure:"outDir"`
-	ProjKey             string `mapstructure:"projkey"`
+	Branch            string `mapstructure:"branch"`
+	CommitUrlTemplate string `mapstructure:"commitUrlTemplate"`
+	DefaultBranch     string `mapstructure:"defaultBranch"`
+	Dir               string `mapstructure:"dir" yaml:"-"`
+	// TODO what is this?
+	HunkUrlTemplate string `mapstructure:"hunkUrlTemplate"`
+	OutDir          string `mapstructure:"outDir"`
+	// TODO don't know if we need all of these
 	RepoName            string `mapstructure:"repoName"`
 	RepoType            string `mapstructure:"repoType"`
 	RepoUrl             string `mapstructure:"repoUrl"`
@@ -63,15 +64,12 @@ type Options struct {
 	UpdateSequenceId    int    `mapstructure:"updateSequenceId"`
 	AllowTags           bool   `mapstructure:"allowTags"`
 	Debug               bool   `mapstructure:"debug"`
-	DryRun              bool   `mapstructure:"dryRun"`
 	IgnoreServiceErrors bool   `mapstructure:"ignoreServiceErrors"`
-	Prune               bool   `mapstructure:"prune"`
 
 	// The following options can only be configured via YAML configuration
 
 	Aliases    []Alias    `mapstructure:"aliases"`
 	Delimiters Delimiters `mapstructure:"delimiters"`
-	Projects   []Project  `mapstructure:"projects"`
 }
 
 type Delimiters struct {
@@ -100,7 +98,6 @@ func Init(flagSet *pflag.FlagSet) error {
 	return viper.BindPFlags(flagSet)
 }
 
-// TODO update
 func InitYAML() error {
 	err := validateYAMLPreconditions()
 	if err != nil {
@@ -122,12 +119,8 @@ func InitYAML() error {
 
 // validatePreconditions ensures required flags have been set
 func validateYAMLPreconditions() error {
-	token := viper.GetString("accessToken")
 	dir := viper.GetString("dir")
 	missingRequiredOptions := []string{}
-	if token == "" {
-		missingRequiredOptions = append(missingRequiredOptions, "accessToken")
-	}
 	if dir == "" {
 		missingRequiredOptions = append(missingRequiredOptions, "dir")
 	}
@@ -176,39 +169,15 @@ func GetWrapperOptions(dir string, merge func(Options) (Options, error)) (Option
 
 func (o Options) ValidateRequired() error {
 	missingRequiredOptions := []string{}
-	if o.AccessToken == "" {
-		missingRequiredOptions = append(missingRequiredOptions, "accessToken")
-	}
 	if o.Dir == "" {
 		missingRequiredOptions = append(missingRequiredOptions, "dir")
 	}
-	if o.ProjKey == "" && len(o.Projects) == 0 {
-		missingRequiredOptions = append(missingRequiredOptions, "projKey/projects")
-	}
-	if o.RepoName == "" {
-		missingRequiredOptions = append(missingRequiredOptions, "repoName")
-	}
+	// TODO we may need this
+	// if o.RepoName == "" {
+	//   missingRequiredOptions = append(missingRequiredOptions, "repoName")
+	// }
 	if len(missingRequiredOptions) > 0 {
 		return fmt.Errorf("missing required option(s): %v", missingRequiredOptions)
-	}
-
-	if len(o.ProjKey) > 0 && len(o.Projects) > 0 {
-		return fmt.Errorf("`--projKey` cannot be combined with `projects` in configuration")
-	}
-
-	if len(o.ProjKey) > maxProjKeyLength {
-		return projKeyValidation(o.ProjKey)
-	}
-
-	if len(o.Projects) > 0 {
-		for _, project := range o.Projects {
-			if len(project.Key) > maxProjKeyLength {
-				err := projKeyValidation(project.Key)
-				if err != nil {
-					return err
-				}
-			}
-		}
 	}
 
 	return nil
@@ -264,17 +233,6 @@ func (o Options) Validate() error {
 		return fmt.Errorf(`"branch" option is required when "revision" option is set`)
 	}
 
-	if len(o.Projects) > 0 {
-		for _, project := range o.Projects {
-			if project.Dir == "" {
-				return nil
-			}
-			if err := validation.IsSubDirValid(o.Dir, project.Dir); err != nil {
-				return err
-			}
-		}
-	}
-
 	return nil
 }
 
@@ -289,8 +247,5 @@ func projKeyValidation(projKey string) error {
 }
 
 func (o Options) GetProjectKeys() (projects []string) {
-	for _, project := range o.Projects {
-		projects = append(projects, project.Key)
-	}
 	return projects
 }

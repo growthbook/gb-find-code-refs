@@ -159,4 +159,10 @@ build number, the current unix timestamp.`,
 		defaultValue: "",
 		usage:        `(Internal) Platform where code references is run.`,
 	},
+	{
+		name:         "flagsPath",
+		short:        "f",
+		defaultValue: "",
+		usage:        "Required path to a JSON file containing a list of flag keys (array of strings). The scanner will search for references to the flags in this file.",
+	},
 }

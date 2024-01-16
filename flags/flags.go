@@ -1,7 +1,9 @@
 package flags
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/launchdarkly/ld-find-code-refs/v2/internal/helpers"
@@ -16,7 +18,7 @@ const (
 
 func GetFlagKeys(opts options.Options, repoParams ld.RepoParams) []string {
 	ignoreServiceErrors := opts.IgnoreServiceErrors
-	flags, err := getFlags()
+	flags, err := getFlags(opts.FlagsPath)
 	if err != nil {
 		helpers.FatalServiceError(fmt.Errorf("could not parse flag keys: %w", err), ignoreServiceErrors)
 	}
@@ -47,7 +49,18 @@ func filterShortFlagKeys(flags []string) (filtered []string, omitted []string) {
 	return filteredFlags, omittedFlags
 }
 
-func getFlags() ([]string, error) {
-	// TODO read from stdin or file (path provided as arg)
-	return []string{"feature-list-realtime-graphs", "github-integration"}, nil
+func getFlags(flagsPath string) ([]string, error) {
+	jsonFile, err := os.Open(flagsPath)
+
+	if err != nil {
+		return nil, err
+	}
+
+	byteValue, err := io.ReadAll(jsonFile)
+
+	var flags []string
+
+	json.Unmarshal(byteValue, &flags)
+
+	return flags, nil
 }

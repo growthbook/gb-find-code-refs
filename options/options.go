@@ -66,6 +66,8 @@ type Options struct {
 	Debug               bool   `mapstructure:"debug"`
 	IgnoreServiceErrors bool   `mapstructure:"ignoreServiceErrors"`
 
+	FlagsPath string `mapstructure:"flagsPath"`
+
 	// The following options can only be configured via YAML configuration
 
 	Aliases    []Alias    `mapstructure:"aliases"`
@@ -120,9 +122,13 @@ func InitYAML() error {
 // validatePreconditions ensures required flags have been set
 func validateYAMLPreconditions() error {
 	dir := viper.GetString("dir")
+	flagsPath := viper.GetString("flagsPath")
 	missingRequiredOptions := []string{}
 	if dir == "" {
 		missingRequiredOptions = append(missingRequiredOptions, "dir")
+	}
+	if flagsPath == "" {
+		missingRequiredOptions = append(missingRequiredOptions, "flagsPath")
 	}
 	if len(missingRequiredOptions) > 0 {
 		return fmt.Errorf("missing required option(s): %v", missingRequiredOptions)

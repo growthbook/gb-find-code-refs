@@ -7,7 +7,6 @@ import (
 	"os"
 
 	"github.com/launchdarkly/ld-find-code-refs/v2/internal/helpers"
-	"github.com/launchdarkly/ld-find-code-refs/v2/internal/ld"
 	"github.com/launchdarkly/ld-find-code-refs/v2/internal/log"
 	"github.com/launchdarkly/ld-find-code-refs/v2/options"
 )
@@ -16,7 +15,7 @@ const (
 	minFlagKeyLen = 3 // Minimum flag key length helps reduce the number of false positives
 )
 
-func GetFlagKeys(opts options.Options, repoParams ld.RepoParams) []string {
+func GetFlagKeys(opts options.Options) []string {
 	ignoreServiceErrors := opts.IgnoreServiceErrors
 	flags, err := getFlags(opts.FlagsPath)
 	if err != nil {

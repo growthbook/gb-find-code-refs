@@ -38,12 +38,6 @@ const (
 	CUSTOM    RepoType = "custom"
 )
 
-type Project struct {
-	Key     string  `mapstructure:"key"`
-	Dir     string  `mapstructure:"dir"`
-	Aliases []Alias `mapstructure:"aliases"`
-}
-
 // TODO audit
 type Options struct {
 	Branch            string `mapstructure:"branch"`
@@ -51,10 +45,8 @@ type Options struct {
 	DefaultBranch     string `mapstructure:"defaultBranch"`
 	Dir               string `mapstructure:"dir" yaml:"-"`
 	// TODO what is this?
-	HunkUrlTemplate string `mapstructure:"hunkUrlTemplate"`
-	OutDir          string `mapstructure:"outDir"`
-	// TODO don't know if we need all of these
-	RepoName            string `mapstructure:"repoName"`
+	HunkUrlTemplate     string `mapstructure:"hunkUrlTemplate"`
+	OutDir              string `mapstructure:"outDir"`
 	RepoType            string `mapstructure:"repoType"`
 	RepoUrl             string `mapstructure:"repoUrl"`
 	Revision            string `mapstructure:"revision"`
@@ -178,10 +170,6 @@ func (o Options) ValidateRequired() error {
 	if o.Dir == "" {
 		missingRequiredOptions = append(missingRequiredOptions, "dir")
 	}
-	// TODO we may need this
-	// if o.RepoName == "" {
-	//   missingRequiredOptions = append(missingRequiredOptions, "repoName")
-	// }
 	if len(missingRequiredOptions) > 0 {
 		return fmt.Errorf("missing required option(s): %v", missingRequiredOptions)
 	}

@@ -34,16 +34,7 @@ func Run(opts options.Options, output bool) {
 		commitTime = gitClient.GitTimestamp
 	}
 
-	repoParams := ld.RepoParams{
-		Type:              opts.RepoType,
-		Name:              opts.RepoName,
-		Url:               opts.RepoUrl,
-		CommitUrlTemplate: opts.CommitUrlTemplate,
-		HunkUrlTemplate:   opts.HunkUrlTemplate,
-		DefaultBranch:     opts.DefaultBranch,
-	}
-
-	matcher, refs := search.Scan(opts, repoParams, absPath)
+	matcher, refs := search.Scan(opts, absPath)
 
 	var updateId *int
 	if opts.UpdateSequenceId >= 0 {
@@ -61,11 +52,11 @@ func Run(opts options.Options, output bool) {
 	}
 
 	if output {
-		generateHunkOutput(opts, matcher, branch, repoParams)
+		generateHunkOutput(opts, matcher, branch)
 	}
 
 	if gitClient != nil {
-		runExtinctions(opts, matcher, branch, repoParams, gitClient)
+		runExtinctions(opts, matcher, branch, gitClient)
 	}
 }
 
@@ -98,11 +89,11 @@ func calculateStaleBranches(branches []ld.BranchRep, remoteBranches map[string]b
 	return staleBranches
 }
 
-func generateHunkOutput(opts options.Options, matcher search.Matcher, branch ld.BranchRep, repoParams ld.RepoParams) {
+func generateHunkOutput(opts options.Options, matcher search.Matcher, branch ld.BranchRep) {
 	outDir := opts.OutDir
 
 	if outDir != "" {
-		outPath, err := branch.WriteToCSV(outDir, "default", repoParams.Name, opts.Revision)
+		outPath, err := branch.WriteToCSV(outDir, "default", opts.Revision)
 		if err != nil {
 			log.Error.Fatalf("error writing code references to csv: %s", err)
 		}
@@ -125,7 +116,7 @@ func generateHunkOutput(opts options.Options, matcher search.Matcher, branch ld.
 	)
 }
 
-func runExtinctions(opts options.Options, matcher search.Matcher, branch ld.BranchRep, repoParams ld.RepoParams, gitClient *git.Client) {
+func runExtinctions(opts options.Options, matcher search.Matcher, branch ld.BranchRep, gitClient *git.Client) {
 	if opts.Lookback > 0 {
 		var removedFlags []ld.ExtinctionRep
 

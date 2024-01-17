@@ -472,7 +472,7 @@ func (b BranchRep) TotalHunkCount() int {
 	return count
 }
 
-func (b BranchRep) WriteToCSV(outDir, projKey, repo, sha string) (path string, err error) {
+func (b BranchRep) WriteToCSV(outDir, projKey, sha string) (path string, err error) {
 	// Try to create a filename with a shortened sha, but if the sha is too short for some unexpected reason, use the branch name instead
 	var tag string
 	if len(sha) >= 7 {
@@ -485,7 +485,7 @@ func (b BranchRep) WriteToCSV(outDir, projKey, repo, sha string) (path string, e
 	if err != nil {
 		return "", fmt.Errorf("invalid outDir '%s': %w", outDir, err)
 	}
-	path = filepath.Join(absPath, fmt.Sprintf("coderefs_%s_%s_%s.csv", projKey, repo, tag))
+	path = filepath.Join(absPath, fmt.Sprintf("coderefs_%s_%s.csv", projKey, tag))
 
 	f, err := os.Create(path)
 	if err != nil {

@@ -25,10 +25,9 @@ func TestCountAll(t *testing.T) {
 		Aliases:            []string{},
 	}
 	b := BranchRep{
-		Name:             "",
-		Head:             "",
-		UpdateSequenceId: nil,
-		SyncTime:         0,
+		Name:     "",
+		Head:     "",
+		SyncTime: 0,
 		References: []ReferenceHunksRep{{
 			Hunks: []HunkRep{h},
 		}},
@@ -61,10 +60,9 @@ func TestCountByProjectAndFlag(t *testing.T) {
 		Aliases:            []string{},
 	}
 	b := BranchRep{
-		Name:             "",
-		Head:             "",
-		UpdateSequenceId: nil,
-		SyncTime:         0,
+		Name:     "",
+		Head:     "",
+		SyncTime: 0,
 		References: []ReferenceHunksRep{{
 			Hunks: []HunkRep{h, notFound},
 		}},

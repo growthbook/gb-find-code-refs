@@ -3,7 +3,6 @@ package options
 import (
 	"errors"
 	"fmt"
-	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -20,44 +19,18 @@ const (
 	maxProjKeyLength = 20 // Maximum project key length
 )
 
-type RepoType string
-
-func (repoType RepoType) isValid() error {
-	switch repoType {
-	case GITHUB, GITLAB, BITBUCKET, CUSTOM:
-		return nil
-	default:
-		return fmt.Errorf(`invalid value %q for "repoType": must be %s, %s, %s, or %s`, repoType, GITHUB, GITLAB, BITBUCKET, CUSTOM)
-	}
-}
-
-const (
-	GITHUB    RepoType = "github"
-	GITLAB    RepoType = "gitlab"
-	BITBUCKET RepoType = "bitbucket"
-	CUSTOM    RepoType = "custom"
-)
-
 // TODO audit
 type Options struct {
 	Branch              string `mapstructure:"branch"`
-	CommitUrlTemplate   string `mapstructure:"commitUrlTemplate"`
-	DefaultBranch       string `mapstructure:"defaultBranch"`
 	Dir                 string `mapstructure:"dir" yaml:"-"`
-	HunkUrlTemplate     string `mapstructure:"hunkUrlTemplate"`
 	OutDir              string `mapstructure:"outDir"`
-	RepoType            string `mapstructure:"repoType"`
-	RepoUrl             string `mapstructure:"repoUrl"`
 	Revision            string `mapstructure:"revision"`
-	UserAgent           string `mapstructure:"userAgent"`
+	FlagsPath           string `mapstructure:"flagsPath"`
 	ContextLines        int    `mapstructure:"contextLines"`
 	Lookback            int    `mapstructure:"lookback"`
-	UpdateSequenceId    int    `mapstructure:"updateSequenceId"`
 	AllowTags           bool   `mapstructure:"allowTags"`
 	Debug               bool   `mapstructure:"debug"`
 	IgnoreServiceErrors bool   `mapstructure:"ignoreServiceErrors"`
-
-	FlagsPath string `mapstructure:"flagsPath"`
 
 	// The following options can only be configured via YAML configuration
 
@@ -185,17 +158,6 @@ func (o Options) Validate() error {
 	maxContextLines := 5
 	if o.ContextLines > maxContextLines {
 		return fmt.Errorf(`invalid value %q for "contextLines": must be <= %d`, o.ContextLines, maxContextLines)
-	}
-
-	repoType := RepoType(strings.ToLower(o.RepoType))
-	if err := repoType.isValid(); err != nil {
-		return err
-	}
-
-	if o.RepoUrl != "" {
-		if _, err := url.ParseRequestURI(o.RepoUrl); err != nil {
-			return fmt.Errorf(`invalid value %q for "repoUrl": %+v`, o.RepoUrl, err)
-		}
 	}
 
 	// match all non-control ASCII characters

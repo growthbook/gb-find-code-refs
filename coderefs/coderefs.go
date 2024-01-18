@@ -36,19 +36,12 @@ func Run(opts options.Options, output bool) {
 
 	matcher, refs := search.Scan(opts, absPath)
 
-	var updateId *int
-	if opts.UpdateSequenceId >= 0 {
-		updateIdOption := opts.UpdateSequenceId
-		updateId = &updateIdOption
-	}
-
 	branch := gb.BranchRep{
-		Name:             strings.TrimPrefix(branchName, "refs/heads/"),
-		Head:             revision,
-		UpdateSequenceId: updateId,
-		SyncTime:         helpers.MakeTimestamp(),
-		References:       refs,
-		CommitTime:       commitTime,
+		Name:       strings.TrimPrefix(branchName, "refs/heads/"),
+		Head:       revision,
+		SyncTime:   helpers.MakeTimestamp(),
+		References: refs,
+		CommitTime: commitTime,
 	}
 
 	if output {

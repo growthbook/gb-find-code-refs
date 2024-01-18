@@ -8,8 +8,8 @@ import (
 	"unicode/utf8"
 
 	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/launchdarkly/ld-find-code-refs/v2/internal/gb"
 	"github.com/launchdarkly/ld-find-code-refs/v2/internal/helpers"
-	"github.com/launchdarkly/ld-find-code-refs/v2/internal/ld"
 )
 
 const (
@@ -41,7 +41,7 @@ type file struct {
 }
 
 // hunkForLine returns a matching code reference for a given flag key on a line
-func (f file) hunkForLine(projKey, flagKey string, lineNum int, matcher Matcher) *ld.HunkRep {
+func (f file) hunkForLine(projKey, flagKey string, lineNum int, matcher Matcher) *gb.HunkRep {
 	line := f.lines[lineNum]
 	ctxLines := matcher.ctxLines
 
@@ -72,7 +72,7 @@ func (f file) hunkForLine(projKey, flagKey string, lineNum int, matcher Matcher)
 	lines := strings.Join(hunkLines, "\n")
 	contentHash := getContentHash(lines)
 
-	ret := ld.HunkRep{
+	ret := gb.HunkRep{
 		ProjKey:            projKey,
 		FlagKey:            flagKey,
 		StartingLineNumber: startingLineNum + 1,
@@ -84,8 +84,8 @@ func (f file) hunkForLine(projKey, flagKey string, lineNum int, matcher Matcher)
 }
 
 // aggregateHunksForFlag finds all references in a file, and combines matches if their context lines overlap
-func (f file) aggregateHunksForFlag(projKey, flagKey string, matcher Matcher, lineNumbers []int) []ld.HunkRep {
-	var hunksForFlag []ld.HunkRep
+func (f file) aggregateHunksForFlag(projKey, flagKey string, matcher Matcher, lineNumbers []int) []gb.HunkRep {
+	var hunksForFlag []gb.HunkRep
 	for _, lineNumber := range lineNumbers {
 		match := f.hunkForLine(projKey, flagKey, lineNumber, matcher)
 		if match != nil {
@@ -101,8 +101,8 @@ func (f file) aggregateHunksForFlag(projKey, flagKey string, matcher Matcher, li
 	return hunksForFlag
 }
 
-func (f file) toHunks(matcher Matcher) *ld.ReferenceHunksRep {
-	hunks := make([]ld.HunkRep, 0)
+func (f file) toHunks(matcher Matcher) *gb.ReferenceHunksRep {
+	hunks := make([]gb.HunkRep, 0)
 	filteredMatchers := make([]ElementMatcher, 0)
 	for _, elementSearch := range matcher.Elements {
 		if elementSearch.Dir != "" {
@@ -122,7 +122,7 @@ func (f file) toHunks(matcher Matcher) *ld.ReferenceHunksRep {
 	if len(hunks) == 0 {
 		return nil
 	}
-	return &ld.ReferenceHunksRep{Path: f.path, Hunks: hunks}
+	return &gb.ReferenceHunksRep{Path: f.path, Hunks: hunks}
 }
 
 func (f file) findMatchingLineNumbersByElement(matcher ElementMatcher) map[string][]int {
@@ -138,7 +138,7 @@ func (f file) findMatchingLineNumbersByElement(matcher ElementMatcher) map[strin
 // mergeHunks combines the lines and aliases of two hunks together for a given file
 // if the hunks do not overlap, returns each hunk separately
 // assumes the startingLineNumber of a is less than b and there is some overlap between the two
-func mergeHunks(a, b ld.HunkRep) []ld.HunkRep {
+func mergeHunks(a, b gb.HunkRep) []gb.HunkRep {
 	if a.StartingLineNumber > b.StartingLineNumber {
 		a, b = b, a
 	}
@@ -149,17 +149,17 @@ func mergeHunks(a, b ld.HunkRep) []ld.HunkRep {
 	overlap := a.Overlap(b)
 	// no overlap
 	if overlap < 0 || len(a.Lines) == 0 && len(b.Lines) == 0 {
-		return []ld.HunkRep{a, b}
+		return []gb.HunkRep{a, b}
 	} else if overlap >= len(bLines) {
 		// subset hunk
-		return []ld.HunkRep{a}
+		return []gb.HunkRep{a}
 	}
 
 	combinedLines := append(aLines, bLines[overlap:]...)
 	lines := strings.Join(combinedLines, "\n")
 	contentHash := getContentHash(lines)
 
-	return []ld.HunkRep{
+	return []gb.HunkRep{
 		{
 			StartingLineNumber: a.StartingLineNumber,
 			Lines:              lines,
@@ -172,7 +172,7 @@ func mergeHunks(a, b ld.HunkRep) []ld.HunkRep {
 }
 
 // processFiles starts goroutines to process files individually. When all files have completed processing, the references channel is closed to signal completion.
-func processFiles(ctx context.Context, files <-chan file, references chan<- ld.ReferenceHunksRep, matcher Matcher) {
+func processFiles(ctx context.Context, files <-chan file, references chan<- gb.ReferenceHunksRep, matcher Matcher) {
 	defer close(references)
 	w := sync.WaitGroup{}
 	for f := range files {
@@ -192,11 +192,11 @@ func processFiles(ctx context.Context, files <-chan file, references chan<- ld.R
 	w.Wait()
 }
 
-func SearchForRefs(directory string, matcher Matcher) ([]ld.ReferenceHunksRep, error) {
+func SearchForRefs(directory string, matcher Matcher) ([]gb.ReferenceHunksRep, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	files := make(chan file)
-	references := make(chan ld.ReferenceHunksRep)
+	references := make(chan gb.ReferenceHunksRep)
 	// Start workers to process files asynchronously as they are written to the files channel
 	go processFiles(ctx, files, references, matcher)
 
@@ -205,7 +205,7 @@ func SearchForRefs(directory string, matcher Matcher) ([]ld.ReferenceHunksRep, e
 		return nil, err
 	}
 
-	ret := make([]ld.ReferenceHunksRep, 0, len(references))
+	ret := make([]gb.ReferenceHunksRep, 0, len(references))
 
 	defer sort.SliceStable(ret, func(i, j int) bool {
 		return ret[i].Path < ret[j].Path

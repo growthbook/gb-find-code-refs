@@ -3,9 +3,9 @@ package coderefs
 import (
 	"strings"
 
+	"github.com/launchdarkly/ld-find-code-refs/v2/internal/gb"
 	"github.com/launchdarkly/ld-find-code-refs/v2/internal/git"
 	"github.com/launchdarkly/ld-find-code-refs/v2/internal/helpers"
-	"github.com/launchdarkly/ld-find-code-refs/v2/internal/ld"
 	"github.com/launchdarkly/ld-find-code-refs/v2/internal/log"
 	"github.com/launchdarkly/ld-find-code-refs/v2/internal/validation"
 	"github.com/launchdarkly/ld-find-code-refs/v2/options"
@@ -42,7 +42,7 @@ func Run(opts options.Options, output bool) {
 		updateId = &updateIdOption
 	}
 
-	branch := ld.BranchRep{
+	branch := gb.BranchRep{
 		Name:             strings.TrimPrefix(branchName, "refs/heads/"),
 		Head:             revision,
 		UpdateSequenceId: updateId,
@@ -60,40 +60,11 @@ func Run(opts options.Options, output bool) {
 	}
 }
 
-func deleteStaleBranches(ldApi ld.ApiClient, repoName string, remoteBranches map[string]bool) error {
-	branches, err := ldApi.GetCodeReferenceRepositoryBranches(repoName)
-	if err != nil {
-		return err
-	}
-
-	staleBranches := calculateStaleBranches(branches, remoteBranches)
-	if len(staleBranches) > 0 {
-		log.Debug.Printf("marking stale branches for code reference pruning: %v", staleBranches)
-		err = ldApi.PostDeleteBranchesTask(repoName, staleBranches)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func calculateStaleBranches(branches []ld.BranchRep, remoteBranches map[string]bool) []string {
-	staleBranches := []string{}
-	for _, branch := range branches {
-		if !remoteBranches[branch.Name] {
-			staleBranches = append(staleBranches, branch.Name)
-		}
-	}
-	log.Info.Printf("found %d stale branches to be marked for code reference pruning", len(staleBranches))
-	return staleBranches
-}
-
-func generateHunkOutput(opts options.Options, matcher search.Matcher, branch ld.BranchRep) {
+func generateHunkOutput(opts options.Options, matcher search.Matcher, branch gb.BranchRep) {
 	outDir := opts.OutDir
 
 	if outDir != "" {
-		outPath, err := branch.WriteToCSV(outDir, "default", opts.Revision)
+		outPath, err := branch.WriteToJSON(outDir, "default", opts.Revision)
 		if err != nil {
 			log.Error.Fatalf("error writing code references to csv: %s", err)
 		}
@@ -116,9 +87,9 @@ func generateHunkOutput(opts options.Options, matcher search.Matcher, branch ld.
 	)
 }
 
-func runExtinctions(opts options.Options, matcher search.Matcher, branch ld.BranchRep, gitClient *git.Client) {
+func runExtinctions(opts options.Options, matcher search.Matcher, branch gb.BranchRep, gitClient *git.Client) {
 	if opts.Lookback > 0 {
-		var removedFlags []ld.ExtinctionRep
+		var removedFlags []gb.ExtinctionRep
 
 		flagCounts := branch.CountByProjectAndFlag(matcher.GetElements(), []string{"default"})
 		missingFlags := []string{}

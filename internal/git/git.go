@@ -14,7 +14,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/format/diff"
 	object "github.com/go-git/go-git/v5/plumbing/object"
 
-	"github.com/launchdarkly/ld-find-code-refs/v2/internal/ld"
+	"github.com/launchdarkly/ld-find-code-refs/v2/internal/gb"
 	"github.com/launchdarkly/ld-find-code-refs/v2/search"
 
 	"github.com/launchdarkly/ld-find-code-refs/v2/internal/log"
@@ -226,7 +226,7 @@ type CommitData struct {
 }
 
 // FindExtinctions searches commit history for flags that had references removed recently
-func (c Client) FindExtinctions(flags []string, matcher search.Matcher, lookback int) ([]ld.ExtinctionRep, error) {
+func (c Client) FindExtinctions(flags []string, matcher search.Matcher, lookback int) ([]gb.ExtinctionRep, error) {
 	commits, err := getCommits(c.workspace, lookback)
 	if err != nil {
 		return nil, err
@@ -239,7 +239,7 @@ func (c Client) FindExtinctions(flags []string, matcher search.Matcher, lookback
 		panic(fmt.Sprintf("Matcher for project (%s) not found", "default"))
 	}
 
-	ret := []ld.ExtinctionRep{}
+	ret := []gb.ExtinctionRep{}
 	for i, c := range commits[:len(commits)-1] {
 		log.Debug.Printf("Examining commit: %s", c.commit.Hash)
 		changes, err := commits[i+1].tree.Diff(c.tree)
@@ -322,8 +322,8 @@ func printDebugStatement(fromFile, toFile diff.File) {
 	log.Debug.Printf("Scanning from file: %s and to file: %s", fromPath, toPath)
 }
 
-func makeExtinctionRepFromCommit(projectKey, flagKey string, commit *object.Commit) ld.ExtinctionRep {
-	return ld.ExtinctionRep{
+func makeExtinctionRepFromCommit(projectKey, flagKey string, commit *object.Commit) gb.ExtinctionRep {
+	return gb.ExtinctionRep{
 		Revision: commit.Hash.String(),
 		Message:  commit.Message,
 		Time:     commit.Author.When.Unix() * 1000,

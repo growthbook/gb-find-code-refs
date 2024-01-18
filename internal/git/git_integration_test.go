@@ -10,9 +10,8 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/stretchr/testify/require"
 
-	"github.com/launchdarkly/ld-find-code-refs/v2/internal/ld"
+	"github.com/launchdarkly/ld-find-code-refs/v2/internal/gb"
 	"github.com/launchdarkly/ld-find-code-refs/v2/internal/log"
-	"github.com/launchdarkly/ld-find-code-refs/v2/options"
 	"github.com/launchdarkly/ld-find-code-refs/v2/search"
 )
 
@@ -96,29 +95,20 @@ func TestFindExtinctions(t *testing.T) {
 	require.NoError(t, err)
 
 	c := Client{workspace: repoDir}
-	projKey := options.Project{
-		Key: "default",
-	}
-	addProjKey := options.Project{
-		Key: "otherProject",
-	}
-	projects := []options.Project{projKey, addProjKey}
 	missingFlags := [][]string{{flag1, flag2}, {flag3}}
 	matcher := search.Matcher{
 		Elements: []search.ElementMatcher{
-			search.NewElementMatcher(projKey.Key, ``, ``, []string{flag1, flag2}, nil),
-			search.NewElementMatcher(addProjKey.Key, ``, ``, []string{flag3}, nil),
+			search.NewElementMatcher("default", ``, ``, []string{flag1, flag2}, nil),
+			search.NewElementMatcher("default", ``, ``, []string{flag3}, nil),
 		},
 	}
 
-	extinctions := make([]ld.ExtinctionRep, 0)
-	for i, project := range projects {
-		extinctionsByProject, err := c.FindExtinctions(project, missingFlags[i], matcher, 10)
-		require.NoError(t, err)
-		extinctions = append(extinctions, extinctionsByProject...)
-	}
+	extinctions := make([]gb.ExtinctionRep, 0)
+	extinctionsByProject, err := c.FindExtinctions(missingFlags[i], matcher, 10)
+	require.NoError(t, err)
+	extinctions = append(extinctions, extinctionsByProject...)
 
-	expected := []ld.ExtinctionRep{
+	expected := []gb.ExtinctionRep{
 		{
 			Revision: commit3.String(),
 			Message:  message3,

@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/launchdarkly/ld-find-code-refs/v2/internal/ld"
+	"github.com/launchdarkly/ld-find-code-refs/v2/internal/gb"
 	"github.com/launchdarkly/ld-find-code-refs/v2/internal/log"
 )
 
@@ -29,7 +29,7 @@ func MakeTimestamp() int64 {
 }
 
 func FatalServiceError(err error, ignoreServiceErrors bool) {
-	if ld.IsTransient(err) {
+	if gb.IsTransient(err) {
 		if ignoreServiceErrors {
 			log.Error.Fatal(fmt.Errorf("%w\n Ignoring error and exiting", err))
 			os.Exit(0)

@@ -1,10 +1,10 @@
 package search
 
 import (
-	"github.com/launchdarkly/ld-find-code-refs/v2/flags"
-	"github.com/launchdarkly/ld-find-code-refs/v2/internal/gb"
-	"github.com/launchdarkly/ld-find-code-refs/v2/internal/log"
-	"github.com/launchdarkly/ld-find-code-refs/v2/options"
+	"github.com/growthbook/gb-find-code-refs/flags"
+	"github.com/growthbook/gb-find-code-refs/internal/gb"
+	"github.com/growthbook/gb-find-code-refs/internal/log"
+	"github.com/growthbook/gb-find-code-refs/options"
 )
 
 // Scan checks the configured directory for flags based on the options configured for Code References.

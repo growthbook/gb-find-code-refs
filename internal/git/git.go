@@ -14,10 +14,10 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/format/diff"
 	object "github.com/go-git/go-git/v5/plumbing/object"
 
-	"github.com/launchdarkly/ld-find-code-refs/v2/internal/gb"
-	"github.com/launchdarkly/ld-find-code-refs/v2/search"
+	"github.com/growthbook/gb-find-code-refs/internal/gb"
+	"github.com/growthbook/gb-find-code-refs/search"
 
-	"github.com/launchdarkly/ld-find-code-refs/v2/internal/log"
+	"github.com/growthbook/gb-find-code-refs/internal/log"
 )
 
 type Client struct {

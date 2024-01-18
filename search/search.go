@@ -8,8 +8,8 @@ import (
 	"unicode/utf8"
 
 	"github.com/go-git/go-git/v5/plumbing"
-	"github.com/launchdarkly/ld-find-code-refs/v2/internal/gb"
-	"github.com/launchdarkly/ld-find-code-refs/v2/internal/helpers"
+	"github.com/growthbook/gb-find-code-refs/internal/gb"
+	"github.com/growthbook/gb-find-code-refs/internal/helpers"
 )
 
 const (

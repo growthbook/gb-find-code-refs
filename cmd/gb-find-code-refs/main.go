@@ -5,15 +5,15 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/launchdarkly/ld-find-code-refs/v2/coderefs"
-	"github.com/launchdarkly/ld-find-code-refs/v2/internal/log"
-	"github.com/launchdarkly/ld-find-code-refs/v2/internal/version"
-	o "github.com/launchdarkly/ld-find-code-refs/v2/options"
+	"github.com/growthbook/gb-find-code-refs/coderefs"
+	"github.com/growthbook/gb-find-code-refs/internal/log"
+	"github.com/growthbook/gb-find-code-refs/internal/version"
+	o "github.com/growthbook/gb-find-code-refs/options"
 )
 
 var extinctions = &cobra.Command{
 	Use:     "extinctions",
-	Example: "ld-find-code-refs extinctions",
+	Example: "gb-find-code-refs extinctions",
 	Short:   "Find and Post extinctions for branch",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		err := o.InitYAML()
@@ -37,7 +37,7 @@ var extinctions = &cobra.Command{
 }
 
 var cmd = &cobra.Command{
-	Use: "ld-find-code-refs",
+	Use: "gb-find-code-refs",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		err := o.InitYAML()
 		if err != nil {
@@ -48,7 +48,6 @@ var cmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		// TODO update
 		err = opts.Validate()
 		if err != nil {
 			return err

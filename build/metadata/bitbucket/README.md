@@ -5,7 +5,7 @@ Job for finding and sending feature flag code references to LaunchDarkly
 Add the following snippet to the script section of your `bitbucket-pipelines.yml` file:
 
 ```yaml
-- pipe: launchdarkly/ld-find-code-refs-pipe:2.11.5
+- pipe: launchdarkly/gb-find-code-refs-pipe:2.11.5
   environment:
     LD_ACCESS_TOKEN: "<string>"
     LD_PROJ_KEY: "<string>" # Required unless using 'projects' block in configuration file then it must be omitted.
@@ -21,7 +21,7 @@ Add the following snippet to the script section of your `bitbucket-pipelines.yml
 
 ## Variables
 
-See [the configuration documentation](https://github.com/launchdarkly/ld-find-code-refs/blob/main/docs/CONFIGURATION.md) for information about additional configuration options, such as configuration delimiters and ignoring files and directories.
+See [the configuration documentation](https://github.com/launchdarkly/gb-find-code-refs/blob/main/docs/CONFIGURATION.md) for information about additional configuration options, such as configuration delimiters and ignoring files and directories.
 
 | Variable                 | Usage |
 | --------------------------- | ----- |
@@ -40,7 +40,7 @@ See [the configuration documentation](https://github.com/launchdarkly/ld-find-co
 (**) = required variable. If this variable is configured as a repository, account or environment variable, it doesn’t need to be declared in the pipe as it will be taken from the context. It can still be overridden when using the pipe.
 
 ## Details
-LaunchDarkly's Code references feature allows you to find source code references to your feature flags within LaunchDarkly. This makes it easy to determine which projects reference your feature flags, and makes cleanup and removal of technical debt easy. For more information, visit our [documentation](https://docs.launchdarkly.com/home/code/code-references). For documentation on the source code of this pipe, see the [source repo](https://github.com/launchdarkly/ld-find-code-refs).
+LaunchDarkly's Code references feature allows you to find source code references to your feature flags within LaunchDarkly. This makes it easy to determine which projects reference your feature flags, and makes cleanup and removal of technical debt easy. For more information, visit our [documentation](https://docs.launchdarkly.com/home/code/code-references). For documentation on the source code of this pipe, see the [source repo](https://github.com/launchdarkly/gb-find-code-refs).
 
 
 ## Prerequisites
@@ -50,7 +50,7 @@ A LaunchDarkly personal access token with writer-level access, or access to the 
 Minimal configuration:
 ```yaml
 script:
-  - pipe: launchdarkly/ld-find-code-refs-pipe:2.11.5
+  - pipe: launchdarkly/gb-find-code-refs-pipe:2.11.5
     environment:
       LD_ACCESS_TOKEN: $LD_ACCESS_TOKEN
       LD_PROJ_KEY: $LD_PROJ_KEY
@@ -59,7 +59,7 @@ script:
 Configuration sending 3 context lines to LaunchDarkly:
 ```yaml
 script:
-  - pipe: launchdarkly/ld-find-code-refs-pipe:2.11.5
+  - pipe: launchdarkly/gb-find-code-refs-pipe:2.11.5
     environment:
       LD_ACCESS_TOKEN: $LD_ACCESS_TOKEN
       LD_PROJ_KEY: $LD_PROJ_KEY

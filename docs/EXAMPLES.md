@@ -1,11 +1,11 @@
 # Examples
 
-The section provides examples of various `bash` commands to execute `ld-find-code-refs` (when installed in the system PATH) with various configurations. We recommend reading through the following examples to gain an understanding of common configurations. For more information on advanced configuration, see [CONFIGURATION.md](CONFIGURATION.md)
+The section provides examples of various `bash` commands to execute `gb-find-code-refs` (when installed in the system PATH) with various configurations. We recommend reading through the following examples to gain an understanding of common configurations. For more information on advanced configuration, see [CONFIGURATION.md](CONFIGURATION.md)
 
 ## Basic configuration
 
 ```bash
-ld-find-code-refs \
+gb-find-code-refs \
   --accessToken=$YOUR_LAUNCHDARKLY_ACCESS_TOKEN \ # example: api-xxxx
   --projKey=$YOUR_LAUNCHDARKLY_PROJECT_KEY \ # example: my-project
   --repoName=$YOUR_REPOSITORY_NAME \ # example: my-repo
@@ -17,7 +17,7 @@ ld-find-code-refs \
 https://docs.launchdarkly.com/home/code/code-references#configuring-context-lines
 
 ```bash
-ld-find-code-refs \
+gb-find-code-refs \
   --accessToken="$YOUR_LAUNCHDARKLY_ACCESS_TOKEN" \
   --projKey="$YOUR_LAUNCHDARKLY_PROJECT_KEY" \
   --repoName="$YOUR_REPOSITORY_NAME" \
@@ -30,21 +30,21 @@ ld-find-code-refs \
 A configuration with the the `repoType` set to GitHub, and the `repoUrl` set to a GitHub URL. We recommend configuring these parameters so LaunchDarkly is able to generate reference links to your source code:
 
 ```bash
-ld-find-code-refs \
+gb-find-code-refs \
   --accessToken="$YOUR_LAUNCHDARKLY_ACCESS_TOKEN" \
   --projKey="$YOUR_LAUNCHDARKLY_PROJECT_KEY" \
   --repoName="$YOUR_REPOSITORY_NAME" \
   --dir="/path/to/git/repo" \
   --contextLines=3 \
   --repoType="github" \
-  --repoUrl="$YOUR_REPOSITORY_URL" # example: https://github.com/launchdarkly/ld-find-code-refs
+  --repoUrl="$YOUR_REPOSITORY_URL" # example: https://github.com/launchdarkly/gb-find-code-refs
 ```
 ## Scanning non-git repositories
 
-By default, `ld-find-code-refs` will attempt to infer repository metadata from a git configuration. If you are scanning a codebase with a version control system other than git, you must use the `--revision` and `--branch` options to manually provide information about your codebase.
+By default, `gb-find-code-refs` will attempt to infer repository metadata from a git configuration. If you are scanning a codebase with a version control system other than git, you must use the `--revision` and `--branch` options to manually provide information about your codebase.
 
 ```bash
-ld-find-code-refs \
+gb-find-code-refs \
   --accessToken=$YOUR_LAUNCHDARKLY_ACCESS_TOKEN \ # example: api-xxxx
   --projKey=$YOUR_LAUNCHDARKLY_PROJECT_KEY \ # example: my-project
   --repoName=$YOUR_REPOSITORY_NAME \ # example: my-repo
@@ -60,7 +60,7 @@ When scanning a non-git repository, automatic [branch garbage collection](../REA
 The following example instructs the `prune` command to delete code references for the branches named "branch1" and "branch2":
 
 ```bash
-ld-find-code-refs prune \
+gb-find-code-refs prune \
   --accessToken=$YOUR_LAUNCHDARKLY_ACCESS_TOKEN \ # example: api-xxxx
   --projKey=$YOUR_LAUNCHDARKLY_PROJECT_KEY \ # example: my-project
   --repoName=$YOUR_REPOSITORY_NAME \ # example: my-repo

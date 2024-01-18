@@ -1,8 +1,8 @@
 name: LaunchDarkly Code References
-image: launchdarkly/ld-find-code-refs-bitbucket-pipeline:2.11.5
+image: launchdarkly/gb-find-code-refs-bitbucket-pipeline:2.11.5
 category: Feature flagging
 description: Job for finding and sending feature flag code references to LaunchDarkly
-repository: https://bitbucket.org/launchdarkly/ld-find-code-refs-pipe
+repository: https://bitbucket.org/launchdarkly/gb-find-code-refs-pipe
 variables:
   - name: LD_REPO_NAME
     default: '$BITBUCKET_REPO_SLUG'

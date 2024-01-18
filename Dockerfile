@@ -4,6 +4,6 @@ RUN apk update
 RUN apk add --no-cache git
 RUN apk add --no-cache openssh
 
-COPY ld-find-code-refs /usr/local/bin/ld-find-code-refs
+COPY gb-find-code-refs /usr/local/bin/gb-find-code-refs
 
-ENTRYPOINT ["ld-find-code-refs"]
+ENTRYPOINT ["gb-find-code-refs"]

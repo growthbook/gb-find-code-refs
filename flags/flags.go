@@ -6,9 +6,9 @@ import (
 	"io"
 	"os"
 
-	"github.com/launchdarkly/ld-find-code-refs/v2/internal/helpers"
-	"github.com/launchdarkly/ld-find-code-refs/v2/internal/log"
-	"github.com/launchdarkly/ld-find-code-refs/v2/options"
+	"github.com/growthbook/gb-find-code-refs/internal/helpers"
+	"github.com/growthbook/gb-find-code-refs/internal/log"
+	"github.com/growthbook/gb-find-code-refs/options"
 )
 
 const (
@@ -28,7 +28,7 @@ func GetFlagKeys(opts options.Options) []string {
 			minFlagKeyLen)
 		os.Exit(0)
 	} else if len(omittedFlags) > 0 {
-		log.Warning.Printf("omitting %d flags with keys less than minimum (%d) for project: %s", len(omittedFlags), minFlagKeyLen)
+		log.Warning.Printf("omitting %d flags with keys less than minimum (%d)", len(omittedFlags), minFlagKeyLen)
 	}
 	return filteredFlags
 }

@@ -2,14 +2,14 @@ version: 2.1
 description: "Job for finding and sending feature flag code references to LaunchDarkly. Code references documentation: https://docs.launchdarkly.com/home/code/circleci"
 display:
   home_url: https://docs.launchdarkly.com
-  source_url: https://github.com/launchdarkly/ld-find-code-refs/tree/main/build/package/circleci
+  source_url: https://github.com/launchdarkly/gb-find-code-refs/tree/main/build/package/circleci
 examples:
   minimal_config:
     description: Minimal configuration
     usage:
       version: 2.1
       orbs:
-        launchdarkly: launchdarkly/ld-find-code-refs@2.11.5
+        launchdarkly: launchdarkly/gb-find-code-refs@2.11.5
       workflows:
         main:
           jobs:
@@ -23,7 +23,7 @@ examples:
     usage:
       version: 2.1
       orbs:
-        launchdarkly: launchdarkly/ld-find-code-refs@2.11.5
+        launchdarkly: launchdarkly/gb-find-code-refs@2.11.5
       workflows:
         main:
           jobs:
@@ -38,7 +38,7 @@ examples:
     usage:
       version: 2.1
       orbs:
-        launchdarkly: launchdarkly/ld-find-code-refs@2.11.5
+        launchdarkly: launchdarkly/gb-find-code-refs@2.11.5
       workflows:
         main:
           jobs:
@@ -75,7 +75,7 @@ jobs:
         default: custom
         enum: ["bitbucket", "custom", "github", "gitlab"]
       repo_url:
-        description:  "The URL for the repository. If provided and `repoType` is not custom, LaunchDarkly will attempt to automatically generate source code links. Example: `https://github.com/launchdarkly/ld-find-code-refs`"
+        description:  "The URL for the repository. If provided and `repoType` is not custom, LaunchDarkly will attempt to automatically generate source code links. Example: `https://github.com/launchdarkly/gb-find-code-refs`"
         type: string
         default: ""
       default_branch:
@@ -83,11 +83,11 @@ jobs:
         type: string
         default: "main"
       commit_url_template:
-        description: "If provided, LaunchDarkly will attempt to generate links to your Git service provider per commit. Example: `https://github.com/launchdarkly/ld-find-code-refs/commit/${sha}`. Allowed template variables: `branchName`, `sha`. If `commitUrlTemplate` is not provided, but `repoUrl` is provided and `repoType` is not `custom`, LaunchDarkly will attempt to automatically generate source code links for the given `repoType`."
+        description: "If provided, LaunchDarkly will attempt to generate links to your Git service provider per commit. Example: `https://github.com/launchdarkly/gb-find-code-refs/commit/${sha}`. Allowed template variables: `branchName`, `sha`. If `commitUrlTemplate` is not provided, but `repoUrl` is provided and `repoType` is not `custom`, LaunchDarkly will attempt to automatically generate source code links for the given `repoType`."
         type: string
         default: ""
       hunk_url_template:
-        description: "If provided, LaunchDarkly will attempt to generate links to your Git service provider per code reference. Example: `https://github.com/launchdarkly/ld-find-code-refs/blob/${sha}/${filePath}#L${lineNumber}`. Allowed template variables: `sha`, `filePath`, `lineNumber`. If `hunkUrlTemplate` is not provided, but `repoUrl` is provided and `repoType` is not `custom``, LaunchDarkly will attempt to automatically generate source code links for the given `repoType`."
+        description: "If provided, LaunchDarkly will attempt to generate links to your Git service provider per code reference. Example: `https://github.com/launchdarkly/gb-find-code-refs/blob/${sha}/${filePath}#L${lineNumber}`. Allowed template variables: `sha`, `filePath`, `lineNumber`. If `hunkUrlTemplate` is not provided, but `repoUrl` is provided and `repoType` is not `custom``, LaunchDarkly will attempt to automatically generate source code links for the given `repoType`."
         type: string
         default: ""
       allow_tags:
@@ -107,7 +107,7 @@ jobs:
         type: integer
         default: 10
     docker:
-      - image: launchdarkly/ld-find-code-refs:2.11.5
+      - image: launchdarkly/gb-find-code-refs:2.11.5
         entrypoint: sh
     steps:
       - checkout:
@@ -117,7 +117,7 @@ jobs:
           command: |
             touch $BASH_ENV
             source $BASH_ENV
-            ld-find-code-refs \
+            gb-find-code-refs \
               --debug="<< parameters.debug >>" \
               --accessToken="<< parameters.access_token >>" \
               --projKey="<< parameters.proj_key >>" \

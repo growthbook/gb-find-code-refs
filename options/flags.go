@@ -11,21 +11,9 @@ type flag struct {
 // TODO update to reflect changes
 var flags = []flag{
 	{
-		name:         "accessToken",
-		short:        "t",
-		defaultValue: "",
-		usage:        "LaunchDarkly personal access token with write-level access.",
-	},
-	{
 		name:         "allowTags",
 		defaultValue: false,
 		usage:        "Enables storing references for tags. The tag will be listed as a branch.",
-	},
-	{
-		name:         "baseUri",
-		short:        "U",
-		defaultValue: "https://app.launchdarkly.com",
-		usage:        "LaunchDarkly base URI.",
 	},
 	{
 		name:         "branch",
@@ -40,7 +28,7 @@ leave the repository in a detached HEAD state.`,
 		defaultValue: "",
 		usage: `If provided, LaunchDarkly will attempt to generate links to
 your VCS service provider per commit.
-Example: https://github.com/launchdarkly/ld-find-code-refs/commit/${sha}.
+Example: https://github.com/launchdarkly/gb-find-code-refs/commit/${sha}.
 Allowed template variables: 'branchName', 'sha'. If "commitUrlTemplate" is not provided, but "repoUrl" is provided and "repoType" is not custom, LaunchDarkly will attempt to automatically generate source code links for the given "repoType".`,
 	},
 	{
@@ -72,17 +60,11 @@ If not provided, will fallback to 'main'.`,
 		usage:        "Path to existing checkout of the repository.",
 	},
 	{
-		name:         "dryRun",
-		defaultValue: false,
-		usage: `If enabled, the scanner will run without sending code references to
-LaunchDarkly. Combine with the outDir option to output code references to a CSV.`,
-	},
-	{
 		name:         "hunkUrlTemplate",
 		defaultValue: "",
 		usage: `If provided, LaunchDarkly will attempt to generate links to 
 your VCS service provider per code reference. 
-Example: https://github.com/launchdarkly/ld-find-code-refs/blob/${sha}/${filePath}#L${lineNumber}.
+Example: https://github.com/launchdarkly/gb-find-code-refs/blob/${sha}/${filePath}#L${lineNumber}.
 Allowed template variables: 'sha', 'filePath', 'lineNumber'. If "hunkUrlTemplate" is not provided, but "repoUrl" is provided and "repoType" is not custom, LaunchDarkly will attempt to automatically generate source code links for the given "repoType".`,
 	},
 	{
@@ -105,24 +87,6 @@ whether a feature flag was removed from code. May be set to 0 to disabled this f
 		defaultValue: "",
 		usage: `If provided, will output a csv file containing all code references for
 the project to this directory.`,
-	},
-	{
-		name:         "projKey",
-		short:        "p",
-		defaultValue: "",
-		usage:        `LaunchDarkly project key. Found under Account Settings -> Projects in the LaunchDarkly dashboard. Cannot be combined with "projects" block in configuration file.`,
-	},
-	{
-		name:         "prune",
-		defaultValue: true,
-		usage:        `If enabled, branches that are not found in the remote repository will be deleted from LaunchDarkly.`,
-	},
-	{
-		name:         "repoName",
-		short:        "r",
-		defaultValue: "",
-		usage: `Repository name. Will be displayed in LaunchDarkly. Case insensitive.
-Repository names must only contain letters, numbers, '.', '_' or '-'."`,
 	},
 	{
 		name:         "repoType",

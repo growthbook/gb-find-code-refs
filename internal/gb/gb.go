@@ -12,7 +12,7 @@ import (
 
 	"github.com/olekukonko/tablewriter"
 
-	"github.com/launchdarkly/ld-find-code-refs/v2/internal/validation"
+	"github.com/growthbook/gb-find-code-refs/internal/validation"
 )
 
 type ConfigurationError struct {

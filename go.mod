@@ -1,4 +1,4 @@
-module github.com/launchdarkly/ld-find-code-refs/v2
+module github.com/growthbook/gb-find-code-refs
 
 go 1.20
 

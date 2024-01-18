@@ -10,6 +10,7 @@ build/package/cmd/gb-find-code-refs
 /bin/
 .idea/
 *.csv
+*.json
 /internal/git/testdata/repo
 metadataUpdates/
 bitbucketMetadataUpdates

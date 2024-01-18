@@ -61,15 +61,17 @@ func Run(opts options.Options, output bool) {
 }
 
 func generateHunkOutput(opts options.Options, matcher search.Matcher, branch gb.BranchRep) {
+	// default to current directory
 	outDir := opts.OutDir
-
-	if outDir != "" {
-		outPath, err := branch.WriteToJSON(outDir, "default", opts.Revision)
-		if err != nil {
-			log.Error.Fatalf("error writing code references to csv: %s", err)
-		}
-		log.Info.Printf("wrote code references to %s", outPath)
+	if outDir == "" {
+		outDir = "."
 	}
+
+	outPath, err := branch.WriteToJSON(outDir, "default", opts.Revision)
+	if err != nil {
+		log.Error.Fatalf("error writing code references to csv: %s", err)
+	}
+	log.Info.Printf("wrote code references to %s", outPath)
 
 	if opts.Debug {
 		branch.PrintReferenceCountTable()

@@ -82,13 +82,12 @@ All command line flags are available as environment variables following the "upp
 
 ## YAML
 
-A YAML file may be used to specify most command line arguments, as well as a number of additional options for advanced usage of `gb-find-code-refs`. The configuration YAML file should be stored as `${dir}/.launchdarkly/coderefs.yaml`.
+A YAML file may be used to specify most command line arguments, as well as a number of additional options for advanced usage of `gb-find-code-refs`. The configuration YAML file should be stored as `${dir}/.growthbook/coderefs.yaml`.
 
 Command line options translate directly to keys in your YAML file. For example, the following options in [this example](EXAMPLES.md#context-lines) can be specified in YAML as follows:
 
 ```yaml
-projKey: my-project
-repoName: my-repo
+dir: ../project-dir/src/
 contextLines: 3
 ```
 

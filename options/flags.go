@@ -85,8 +85,7 @@ whether a feature flag was removed from code. May be set to 0 to disabled this f
 		name:         "outDir",
 		short:        "o",
 		defaultValue: "",
-		usage: `If provided, will output a csv file containing all code references for
-the project to this directory.`,
+		usage:        `If provided, will output the JSON file containing all code references to this directory. Otherwise, will output JSON file to current working directory.`,
 	},
 	{
 		name:         "repoType",

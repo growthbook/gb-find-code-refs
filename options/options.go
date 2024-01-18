@@ -40,11 +40,10 @@ const (
 
 // TODO audit
 type Options struct {
-	Branch            string `mapstructure:"branch"`
-	CommitUrlTemplate string `mapstructure:"commitUrlTemplate"`
-	DefaultBranch     string `mapstructure:"defaultBranch"`
-	Dir               string `mapstructure:"dir" yaml:"-"`
-	// TODO what is this?
+	Branch              string `mapstructure:"branch"`
+	CommitUrlTemplate   string `mapstructure:"commitUrlTemplate"`
+	DefaultBranch       string `mapstructure:"defaultBranch"`
+	Dir                 string `mapstructure:"dir" yaml:"-"`
 	HunkUrlTemplate     string `mapstructure:"hunkUrlTemplate"`
 	OutDir              string `mapstructure:"outDir"`
 	RepoType            string `mapstructure:"repoType"`
@@ -103,7 +102,7 @@ func InitYAML() error {
 	}
 	viper.SetConfigName("coderefs")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath(filepath.Join(absPath, ".launchdarkly"))
+	viper.AddConfigPath(filepath.Join(absPath, ".growthbook"))
 	err = viper.ReadInConfig()
 	if err != nil && !errors.As(err, &viper.ConfigFileNotFoundError{}) {
 		return err

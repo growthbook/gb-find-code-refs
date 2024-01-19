@@ -118,4 +118,4 @@ delimiters:
 
 All dotfiles and patterns in `.gitignore` and `.ignore` will be excluded by default.
 
-To ignore additional files and directories, provide a `.ldignore` file in the root directory of your Git repository. All patterns specified in `.ldignore` file will be excluded by the scanner. Patterns must follow the `.gitignore` format as specified here: https://git-scm.com/docs/gitignore#_pattern_format
+To ignore additional files and directories, provide a `.gbignore` file in the root directory of your Git repository. All patterns specified in `.gbignore` file will be excluded by the scanner. Patterns must follow the `.gitignore` format as specified here: https://git-scm.com/docs/gitignore#_pattern_format

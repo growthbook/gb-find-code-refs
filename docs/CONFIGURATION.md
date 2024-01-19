@@ -57,7 +57,7 @@ Flags:
 
 ## Environment variables
 
-All command line flags are available as environment variables following the "upper snake case" format, with a prefix of `LD_`. For example, the command line option `accessToken` may be set as an environment variable e.g. `export LD_ACCESS_TOKEN = 'myTestToken'`.
+All command line flags are available as environment variables following the "upper snake case" format, with a prefix of `GB_`. For example, the command line option `flagsPath` may be set as an environment variable e.g. `export GB_FLAGS_PATH = '../../project-dir'`.
 
 ## YAML
 
@@ -72,7 +72,7 @@ contextLines: 3
 
 ### YAML Restrictions
 
-`accessToken` and `dir` may not be specified in the YAML file, and must be specified as either command line flags or environment variables.
+`flagsPath` and `dir` may not be specified in the YAML file, and must be specified as either command line flags or environment variables.
 
 ### Advanced YAML configuration
 

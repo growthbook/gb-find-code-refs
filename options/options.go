@@ -3,7 +3,6 @@ package options
 import (
 	"errors"
 	"fmt"
-	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -58,7 +57,7 @@ func Init(flagSet *pflag.FlagSet) error {
 	}
 
 	flagSet.VisitAll(func(f *pflag.Flag) {
-		viper.BindEnv(f.Name, "LD_"+strcase.ToScreamingSnake(f.Name))
+		viper.BindEnv(f.Name, "GB_"+strcase.ToScreamingSnake(f.Name))
 	})
 
 	return viper.BindPFlags(flagSet)
@@ -115,10 +114,6 @@ func GetWrapperOptions(dir string, merge func(Options) (Options, error)) (Option
 	}
 
 	// Set precondition flags
-	err = flags.Set("accessToken", os.Getenv("LD_ACCESS_TOKEN"))
-	if err != nil {
-		return Options{}, err
-	}
 	err = flags.Set("dir", dir)
 	if err != nil {
 		return Options{}, err

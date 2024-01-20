@@ -1,6 +1,10 @@
 package coderefs
 
 import (
+	"encoding/json"
+	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/growthbook/gb-find-code-refs/internal/gb"
@@ -12,7 +16,7 @@ import (
 	"github.com/growthbook/gb-find-code-refs/search"
 )
 
-func Run(opts options.Options, output bool) {
+func Run(opts options.Options, extinctions bool) {
 	absPath, err := validation.NormalizeAndValidatePath(opts.Dir)
 	if err != nil {
 		log.Error.Fatalf("could not validate directory option: %s", err)
@@ -44,11 +48,11 @@ func Run(opts options.Options, output bool) {
 		CommitTime: commitTime,
 	}
 
-	if output {
+	if !extinctions {
 		generateHunkOutput(opts, matcher, branch)
 	}
 
-	if gitClient != nil {
+	if gitClient != nil && extinctions {
 		runExtinctions(opts, matcher, branch, gitClient)
 	}
 }
@@ -60,7 +64,7 @@ func generateHunkOutput(opts options.Options, matcher search.Matcher, branch gb.
 		outDir = "."
 	}
 
-	outPath, err := branch.WriteToJSON(outDir, "default", opts.Revision)
+	outPath, err := branch.WriteToJSON(outDir, opts.Revision)
 	if err != nil {
 		log.Error.Fatalf("error writing code references to csv: %s", err)
 	}
@@ -109,5 +113,21 @@ func runExtinctions(opts options.Options, matcher search.Matcher, branch gb.Bran
 		//     log.Error.Printf("error sending extinction events to LaunchDarkly: %s", err)
 		//   }
 		// }
+
+		var outDir string
+		if opts.OutDir == "" {
+			outDir = "."
+		} else {
+			outDir = opts.OutDir
+		}
+		absPath, err := validation.NormalizeAndValidatePath(outDir)
+		filename := strings.ReplaceAll(fmt.Sprintf("extinctions_%s.json", branch.Name), "/", "_")
+		path := filepath.Join(absPath, filename)
+		f, err := os.Create(path)
+		r, err := json.Marshal(removedFlags)
+		if err != nil {
+			return
+		}
+		_, err = f.Write(r)
 	}
 }

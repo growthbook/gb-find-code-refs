@@ -31,7 +31,7 @@ var extinctions = &cobra.Command{
 		}
 
 		log.Init(opts.Debug)
-		coderefs.Run(opts, false)
+		coderefs.Run(opts, true)
 		return nil
 	},
 }
@@ -54,7 +54,7 @@ var cmd = &cobra.Command{
 		}
 
 		log.Init(opts.Debug)
-		coderefs.Run(opts, true)
+		coderefs.Run(opts, false)
 		return nil
 	},
 	Version: version.Version,

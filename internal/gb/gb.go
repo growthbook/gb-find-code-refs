@@ -80,7 +80,7 @@ func (b BranchRep) WriteToJSON(outDir, sha string) (path string, err error) {
 	}
 	defer f.Close()
 
-	records := make([][]string, 0, len(b.References)+1)
+	records := make([]HunkRep, 0, len(b.References)+1)
 	for _, ref := range b.References {
 		records = append(records, ref.toRecords()...)
 	}
@@ -89,8 +89,8 @@ func (b BranchRep) WriteToJSON(outDir, sha string) (path string, err error) {
 	sort.Slice(records, func(i, j int) bool {
 		// sort by flagKey -> path -> startingLineNumber
 		for k := 0; k < 3; k++ {
-			if records[i][k] != records[j][k] {
-				return records[i][k] < records[j][k]
+			if records[i].FlagKey != records[j].FlagKey {
+				return records[i].FlagKey < records[j].FlagKey
 			}
 		}
 		// above loop should always return since startingLineNumber is guaranteed to be unique
@@ -112,10 +112,10 @@ type ReferenceHunksRep struct {
 	Hunks []HunkRep `json:"hunks"`
 }
 
-func (r ReferenceHunksRep) toRecords() [][]string {
-	ret := make([][]string, 0, len(r.Hunks))
+func (r ReferenceHunksRep) toRecords() []HunkRep {
+	ret := make([]HunkRep, 0, len(r.Hunks))
 	for _, hunk := range r.Hunks {
-		ret = append(ret, []string{hunk.FlagKey, hunk.ProjKey, r.Path, strconv.FormatInt(int64(hunk.StartingLineNumber), 10), hunk.Lines, strings.Join(hunk.Aliases, " "), hunk.ContentHash})
+		ret = append(ret, hunk)
 	}
 	return ret
 }

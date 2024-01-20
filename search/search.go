@@ -41,7 +41,7 @@ type file struct {
 }
 
 // hunkForLine returns a matching code reference for a given flag key on a line
-func (f file) hunkForLine(projKey, flagKey string, lineNum int, matcher Matcher) *gb.HunkRep {
+func (f file) hunkForLine(flagKey string, lineNum int, matcher Matcher) *gb.HunkRep {
 	line := f.lines[lineNum]
 	ctxLines := matcher.ctxLines
 
@@ -73,7 +73,6 @@ func (f file) hunkForLine(projKey, flagKey string, lineNum int, matcher Matcher)
 	contentHash := getContentHash(lines)
 
 	ret := gb.HunkRep{
-		ProjKey:            projKey,
 		FlagKey:            flagKey,
 		StartingLineNumber: startingLineNum + 1,
 		Lines:              lines,
@@ -84,10 +83,10 @@ func (f file) hunkForLine(projKey, flagKey string, lineNum int, matcher Matcher)
 }
 
 // aggregateHunksForFlag finds all references in a file, and combines matches if their context lines overlap
-func (f file) aggregateHunksForFlag(projKey, flagKey string, matcher Matcher, lineNumbers []int) []gb.HunkRep {
+func (f file) aggregateHunksForFlag(flagKey string, matcher Matcher, lineNumbers []int) []gb.HunkRep {
 	var hunksForFlag []gb.HunkRep
 	for _, lineNumber := range lineNumbers {
-		match := f.hunkForLine(projKey, flagKey, lineNumber, matcher)
+		match := f.hunkForLine(flagKey, lineNumber, matcher)
 		if match != nil {
 			lastHunkIdx := len(hunksForFlag) - 1
 			// If the previous hunk overlaps or is adjacent to the current hunk, merge them together
@@ -116,7 +115,7 @@ func (f file) toHunks(matcher Matcher) *gb.ReferenceHunksRep {
 	for _, elementSearch := range filteredMatchers {
 		lineNumbersByElement := f.findMatchingLineNumbersByElement(elementSearch)
 		for element, lineNumbers := range lineNumbersByElement {
-			hunks = append(hunks, f.aggregateHunksForFlag(elementSearch.ProjKey, element, matcher, lineNumbers)...)
+			hunks = append(hunks, f.aggregateHunksForFlag(element, matcher, lineNumbers)...)
 		}
 	}
 	if len(hunks) == 0 {
@@ -163,7 +162,6 @@ func mergeHunks(a, b gb.HunkRep) []gb.HunkRep {
 		{
 			StartingLineNumber: a.StartingLineNumber,
 			Lines:              lines,
-			ProjKey:            a.ProjKey,
 			FlagKey:            a.FlagKey,
 			Aliases:            helpers.Dedupe(append(a.Aliases, b.Aliases...)),
 			ContentHash:        contentHash,

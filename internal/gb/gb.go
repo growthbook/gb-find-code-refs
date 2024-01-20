@@ -123,7 +123,6 @@ func (r ReferenceHunksRep) toRecords() []HunkRep {
 type HunkRep struct {
 	StartingLineNumber int      `json:"startingLineNumber"`
 	Lines              string   `json:"lines,omitempty"`
-	ProjKey            string   `json:"projKey"`
 	FlagKey            string   `json:"flagKey"`
 	Aliases            []string `json:"aliases,omitempty"`
 	ContentHash        string   `json:"contentHash,omitempty"`
@@ -175,19 +174,15 @@ func (b BranchRep) CountAll() map[string]int64 {
 	return refCount
 }
 
-func (b BranchRep) CountByProjectAndFlag(matcher [][]string, projects []string) map[string]map[string]int64 {
-	refCountByFlag := map[string]map[string]int64{}
-	for i, project := range projects {
-		refCountByFlag[project] = map[string]int64{}
-		for _, flag := range matcher[i] {
-			refCountByFlag[project][flag] = 0
-		}
-		for _, ref := range b.References {
-			for _, hunk := range ref.Hunks {
-				if hunk.ProjKey == project {
-					refCountByFlag[project][hunk.FlagKey]++
-				}
-			}
+func (b BranchRep) CountByFlag(matcher [][]string) map[string]int64 {
+	refCountByFlag := map[string]int64{}
+	// only one project
+	for _, flag := range matcher[0] {
+		refCountByFlag[flag] = 0
+	}
+	for _, ref := range b.References {
+		for _, hunk := range ref.Hunks {
+			refCountByFlag[hunk.FlagKey]++
 		}
 	}
 	return refCountByFlag

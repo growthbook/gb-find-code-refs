@@ -90,9 +90,9 @@ func runExtinctions(opts options.Options, matcher search.Matcher, branch gb.Bran
 	if opts.Lookback > 0 {
 		var removedFlags []gb.ExtinctionRep
 
-		flagCounts := branch.CountByProjectAndFlag(matcher.GetElements(), []string{"default"})
+		flagCounts := branch.CountByFlag(matcher.GetElements())
 		missingFlags := []string{}
-		for flag, count := range flagCounts["default"] {
+		for flag, count := range flagCounts {
 			if count == 0 {
 				missingFlags = append(missingFlags, flag)
 			}

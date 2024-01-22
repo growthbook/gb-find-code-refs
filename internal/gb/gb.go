@@ -114,9 +114,7 @@ type ReferenceHunksRep struct {
 
 func (r ReferenceHunksRep) toRecords() []HunkRep {
 	ret := make([]HunkRep, 0, len(r.Hunks))
-	for _, hunk := range r.Hunks {
-		ret = append(ret, hunk)
-	}
+	ret = append(ret, r.Hunks...)
 	return ret
 }
 

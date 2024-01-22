@@ -106,28 +106,38 @@ func runExtinctions(opts options.Options, matcher search.Matcher, branch gb.Bran
 		}
 		removedFlags = append(removedFlags, removedFlagsByProject...)
 
-		// TODO replace this with way to output to stdout instead
-		// if len(removedFlags) > 0 && !opts.DryRun {
-		//   err := ldApi.PostExtinctionEvents(removedFlags, repoParams.Name, branch.Name)
-		//   if err != nil {
-		//     log.Error.Printf("error sending extinction events to LaunchDarkly: %s", err)
-		//   }
-		// }
-
 		var outDir string
 		if opts.OutDir == "" {
 			outDir = "."
 		} else {
 			outDir = opts.OutDir
 		}
+
 		absPath, err := validation.NormalizeAndValidatePath(outDir)
-		filename := strings.ReplaceAll(fmt.Sprintf("extinctions_%s.json", branch.Name), "/", "_")
-		path := filepath.Join(absPath, filename)
-		f, err := os.Create(path)
-		r, err := json.Marshal(removedFlags)
 		if err != nil {
+			log.Warning.Printf("unable normalize and validate path: %s", err)
 			return
 		}
+
+		filename := strings.ReplaceAll(fmt.Sprintf("extinctions_%s.json", branch.Name), "/", "_")
+		path := filepath.Join(absPath, filename)
+
+		f, err := os.Create(path)
+		if err != nil {
+			log.Warning.Printf("unable to create file: %s", err)
+			return
+		}
+
+		r, err := json.Marshal(removedFlags)
+		if err != nil {
+			log.Warning.Printf("unable to marshal removed flags: %s", err)
+			return
+		}
+
 		_, err = f.Write(r)
+		if err != nil {
+			log.Warning.Printf("unable to write extinctions file: %s", err)
+			return
+		}
 	}
 }

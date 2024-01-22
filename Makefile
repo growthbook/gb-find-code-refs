@@ -34,9 +34,6 @@ compile-linux-binary:
 compile-github-actions-binary:
 	GOOS=linux GOARCH=amd64 go build ${BUILD_FLAGS} -o build/package/github-actions/gb-find-code-refs-github-action ./build/package/github-actions
 
-compile-bitbucket-pipelines-binary:
-	GOOS=linux GOARCH=amd64 go build ${BUILD_FLAGS} -o build/package/bitbucket-pipelines/gb-find-code-refs-bitbucket-pipeline ./build/package/bitbucket-pipelines
-
 # Get the lines added to the most recent changelog update (minus the first 2 lines)
 RELEASE_NOTES=<(GIT_EXTERNAL_DIFF='bash -c "diff --unchanged-line-format=\"\" $$2 $$5" || true' git log --ext-diff -1 --pretty= -p CHANGELOG.md)
 
@@ -52,25 +49,10 @@ define publish_docker
 	test $(2) || docker push launchdarkly/$(3):latest
 endef
 
-# TODO: Remove all circleci publishing targets when we have a github owner token setup.
-# Use ./ldrelease/publish-circleci.sh to publish to circleci orbs registry.
-validate-circle-orb:
-	test $(TAG) || (echo "Please provide tag"; exit 1)
-	circleci orb validate build/package/circleci/orb.yml || (echo "Unable to validate orb"; exit 1)
-
-publish-dev-circle-orb: validate-circle-orb
-	circleci orb publish build/package/circleci/orb.yml launchdarkly/gb-find-code-refs@dev:$(TAG)
-
-publish-release-circle-orb: validate-circle-orb
-	circleci orb publish build/package/circleci/orb.yml launchdarkly/gb-find-code-refs@$(TAG)
-
-publish-all: publish-release-circle-orb
-
 clean:
 	rm -rf out/
 	rm -f build/pacakge/cmd/gb-find-code-refs
 	rm -f build/package/github-actions/gb-find-code-refs-github-action
-	rm -f build/package/bitbucket-pipelines/gb-find-code-refs-bitbucket-pipeline
 
 RELEASE_CMD=curl -sL https://git.io/goreleaser | GOPATH=$(mktemp -d) VERSION=$(GORELEASER_VERSION) GITHUB_TOKEN=$(GITHUB_TOKEN) bash -s -- --clean --release-notes $(RELEASE_NOTES)
 
@@ -83,4 +65,4 @@ test-publish:
 products-for-release:
 	$(RELEASE_CMD) --skip-publish --skip-validate
 
-.PHONY: init test lint compile-github-actions-binary compile-macos-binary compile-linux-binary compile-windows-binary compile-bitbucket-pipelines-binary echo-release-notes publish-dev-circle-orb publish-release-circle-orb publish-all clean build
+.PHONY: init test lint compile-github-actions-binary compile-macos-binary compile-linux-binary compile-windows-binary echo-release-notes publish-all clean build

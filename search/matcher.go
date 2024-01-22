@@ -20,8 +20,6 @@ func NewMultiProjectMatcher(opts options.Options, dir string, flagKeys []string)
 
 	projectFlags := flagKeys
 	projectAliases := opts.Aliases
-	// TODO make sure aliases work
-	// projectAliases = append(projectAliases, project.Aliases...)
 	aliasesByFlagKey, err := aliases.GenerateAliases(projectFlags, projectAliases, dir)
 	if err != nil {
 		log.Error.Fatalf("failed to generate aliases: %s", err)

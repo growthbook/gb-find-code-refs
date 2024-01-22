@@ -6,8 +6,6 @@ import (
 	"io"
 	"os"
 	"regexp"
-	"strings"
-	"time"
 
 	"github.com/growthbook/gb-find-code-refs/coderefs"
 	"github.com/growthbook/gb-find-code-refs/internal/log"
@@ -28,18 +26,7 @@ func main() {
 // mergeGithubOptions sets inferred options from the github actions environment, when available
 func mergeGithubOptions(opts o.Options) (o.Options, error) {
 	log.Info.Printf("Setting GitHub action env vars")
-	ghRepo := strings.Split(os.Getenv("GITHUB_REPOSITORY"), "/")
-	repoName := ""
 
-	if opts.RepoName != "" {
-		repoName = opts.RepoName
-	} else {
-		if len(ghRepo) > 1 {
-			repoName = ghRepo[1]
-		} else {
-			log.Error.Printf("unable to validate GitHub repository name: %v", ghRepo)
-		}
-	}
 	event, err := parseEvent(os.Getenv("GITHUB_EVENT_PATH"))
 	if err != nil {
 		log.Error.Printf("error parsing GitHub event payload at %q: %v", os.Getenv("GITHUB_EVENT_PATH"), err)
@@ -49,22 +36,7 @@ func mergeGithubOptions(opts o.Options) (o.Options, error) {
 		log.Error.Fatalf("error detecting git branch: %s", err)
 	}
 
-	repoUrl := ""
-	defaultBranch := ""
-	updateSequenceId := -1
-	if event != nil {
-		repoUrl = event.Repo.Url
-		defaultBranch = event.Repo.DefaultBranch
-		updateSequenceId = int(time.Now().Unix() * 1000) // seconds to ms
-	}
-
-	opts.RepoType = "github"
-	opts.RepoName = repoName
-	opts.RepoUrl = repoUrl
-	opts.DefaultBranch = defaultBranch
 	opts.Branch = ghBranch
-	opts.UpdateSequenceId = updateSequenceId
-	opts.UserAgent = "github-actions"
 
 	return opts, opts.Validate()
 }

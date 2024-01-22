@@ -1,8 +1,0 @@
-FROM alpine:3.19.0
-
-RUN apk update
-RUN apk add --no-cache git
-
-COPY gb-find-code-refs-bitbucket-pipeline /gb-find-code-refs-bitbucket-pipeline
-
-ENTRYPOINT ["/gb-find-code-refs-bitbucket-pipeline"]

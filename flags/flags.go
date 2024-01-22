@@ -57,6 +57,10 @@ func getFlags(flagsPath string) ([]string, error) {
 
 	byteValue, err := io.ReadAll(jsonFile)
 
+	if err != nil {
+		return nil, err
+	}
+
 	var flags []string
 
 	json.Unmarshal(byteValue, &flags)

@@ -14,11 +14,6 @@ import (
 	"github.com/growthbook/gb-find-code-refs/internal/validation"
 )
 
-const (
-	maxProjKeyLength = 20 // Maximum project key length
-)
-
-// TODO audit
 type Options struct {
 	Branch              string `mapstructure:"branch"`
 	Dir                 string `mapstructure:"dir" yaml:"-"`
@@ -180,16 +175,6 @@ func (o Options) Validate() error {
 
 	if o.Revision != "" && o.Branch == "" {
 		return fmt.Errorf(`"branch" option is required when "revision" option is set`)
-	}
-
-	return nil
-}
-
-func projKeyValidation(projKey string) error {
-	if strings.HasPrefix(projKey, "sdk-") {
-		return fmt.Errorf("provided project key (%s) appears to be a LaunchDarkly SDK key", "sdk-xxxx")
-	} else if strings.HasPrefix(projKey, "api-") {
-		return fmt.Errorf("provided project key (%s) appears to be a LaunchDarkly API access token", "api-xxxx")
 	}
 
 	return nil

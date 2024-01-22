@@ -66,7 +66,7 @@ A YAML file may be used to specify most command line arguments, as well as a num
 Command line options translate directly to keys in your YAML file. For example, the following options in [this example](EXAMPLES.md#context-lines) can be specified in YAML as follows:
 
 ```yaml
-dir: ../project-dir/src/
+outDir: "./output"
 contextLines: 3
 ```
 

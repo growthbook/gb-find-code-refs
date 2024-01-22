@@ -85,13 +85,9 @@ func InitYAML() error {
 // validatePreconditions ensures required flags have been set
 func validateYAMLPreconditions() error {
 	dir := viper.GetString("dir")
-	flagsPath := viper.GetString("flagsPath")
 	missingRequiredOptions := []string{}
 	if dir == "" {
 		missingRequiredOptions = append(missingRequiredOptions, "dir")
-	}
-	if flagsPath == "" {
-		missingRequiredOptions = append(missingRequiredOptions, "flagsPath")
 	}
 	if len(missingRequiredOptions) > 0 {
 		return fmt.Errorf("missing required option(s): %v", missingRequiredOptions)
@@ -136,6 +132,9 @@ func (o Options) ValidateRequired() error {
 	missingRequiredOptions := []string{}
 	if o.Dir == "" {
 		missingRequiredOptions = append(missingRequiredOptions, "dir")
+	}
+	if o.FlagsPath == "" {
+		missingRequiredOptions = append(missingRequiredOptions, "flagsPath")
 	}
 	if len(missingRequiredOptions) > 0 {
 		return fmt.Errorf("missing required option(s): %v", missingRequiredOptions)

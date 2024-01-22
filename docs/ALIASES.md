@@ -1,6 +1,6 @@
 # Feature flag aliases
 
-Aliases may be generated to find indirect references to feature flags, such as flag keys stored in variables or wrapped SDK code. Once aliases are generated, `gb-find-code-refs` will automatically scan for aliases in addition to flag keys, and surface them in the LaunchDarkly dashboard.
+Aliases may be generated to find indirect references to feature flags, such as flag keys stored in variables or wrapped SDK code. Once aliases are generated, `gb-find-code-refs` will automatically scan for aliases in addition to flag keys.
 
 To generate aliases for your flag keys, you may use any combination of the patterns described below. Configuration types may be used in conjunction and defined more than once for comprehensive alias coverage.
 

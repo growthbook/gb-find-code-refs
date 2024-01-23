@@ -6,7 +6,6 @@ import (
 	"io"
 	"os"
 
-	"github.com/growthbook/gb-find-code-refs/internal/helpers"
 	"github.com/growthbook/gb-find-code-refs/internal/log"
 	"github.com/growthbook/gb-find-code-refs/options"
 )
@@ -16,10 +15,9 @@ const (
 )
 
 func GetFlagKeys(opts options.Options) []string {
-	ignoreServiceErrors := opts.IgnoreServiceErrors
 	flags, err := getFlags(opts.FlagsPath)
 	if err != nil {
-		helpers.FatalServiceError(fmt.Errorf("could not parse flag keys: %w", err), ignoreServiceErrors)
+		log.Error.Fatal(fmt.Errorf("could not parse flag keys: %w", err))
 	}
 
 	filteredFlags, omittedFlags := filterShortFlagKeys(flags)

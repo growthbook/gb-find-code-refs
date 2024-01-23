@@ -40,13 +40,6 @@ leave the repository in a detached HEAD state.`,
 		usage:        "Path to existing checkout of the repository.",
 	},
 	{
-		name:         "ignoreServiceErrors",
-		short:        "i",
-		defaultValue: false,
-		usage: `If enabled, the scanner will terminate with exit code 0 when the
-LaunchDarkly API is unreachable or returns an unexpected response.`,
-	},
-	{
 		name:         "lookback",
 		short:        "l",
 		defaultValue: 10,

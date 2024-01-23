@@ -24,21 +24,8 @@ func newConfigurationError(e string) ConfigurationError {
 }
 
 var (
-	NotFoundErr           = errors.New("not found")
-	ConflictErr           = errors.New("conflict")
-	RateLimitExceededErr  = errors.New("rate limit exceeded")
-	InternalServiceErr    = errors.New("internal service error")
-	ServiceUnavailableErr = errors.New("service unavailable")
-	RepositoryDisabledErr = newConfigurationError("repository is disabled")
-	UnauthorizedErr       = newConfigurationError("unauthorized, check your LaunchDarkly access token")
-	EntityTooLargeErr     = newConfigurationError("entity too large")
+	NotFoundErr = errors.New("not found")
 )
-
-// IsTransient returns true if the error returned by the LaunchDarkly API is either unexpected, or unable to be resolved by the user.
-func IsTransient(err error) bool {
-	var e ConfigurationError
-	return !errors.As(err, &e)
-}
 
 type BranchRep struct {
 	Name       string              `json:"name"`

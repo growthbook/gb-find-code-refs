@@ -17,7 +17,7 @@ const (
 	// large repos, false positives, etc. The goal is a) to prevent the program
 	// from taking a very long time to run and b) to prevent the program from
 	// PUTing a massive json payload. These limits will likely be tweaked over
-	// time. The LaunchDarkly backend will also apply limits.
+	// time.
 	maxFileCount     = 10000 // Maximum number of files containing code references
 	maxHunkCount     = 25000 // Maximum number of total code references
 	maxLineCharCount = 500   // Maximum number of characters per line

@@ -44,8 +44,6 @@ Flags:
 
   -h, --help                       help for gb-find-code-refs
 
-  -i, --ignoreServiceErrors        If enabled, the scanner will terminate with exit code 0 when the LaunchDarkly API is unreachable or returns an unexpected response.
-
   -l, --lookback int               Sets the number of git commits to search in history for whether a feature flag was removed from code. May be set to 0 to disabled this feature. Setting this option to a high value will increase search time. (default 10)
 
   -o, --outDir string              If provided, will output the JSON file containing all code references to this directory. Otherwise, will output JSON file to current working directory.
@@ -80,29 +78,11 @@ In addition to all command line options, the `coderefs.yaml` file allows you to 
 
 #### Aliases
 
-Patterns to match aliases for your flag keys may be defined to better suit your implementation of LaunchDarkly. See [ALIASES.md](ALIASES.md) for more information.
-
-#### Projects
-
-Supported Version: 2.5.0+
-
-Projects allow Code References to scan a monorepo for multiple LaunchDarkly Projects in a single run. If a `dir` is provided Code References will only start looking for that Project's feature flag keys and aliases below that directory.
-
-Each Project block can support an optional list of alias configuration blocks. Any globally defined aliases will be inherited.
-
-_Upgrading note from a version prior to 2.5.0_: Previous versions of `gb-find-code-refs` required `projKey` parameter to be set. If you want to use 'projects' in your configuration (typically used for monorepos) you will need to remove the `projKey` parameter.
-
-```yaml
-projects:
-    - key: example-project
-      dir: subdir/to/start
-      aliases:
-          - type: camelcase
-```
+Patterns to match aliases for your flag keys may be defined to better suit your implementation. See [ALIASES.md](ALIASES.md) for more information.
 
 #### Delimiters
 
-By default, `gb-find-code-refs` will only match flag keys surrounded by single quotes ('), double quotes ("), or backticks (`). This default behavior may be disabled and additional delimiters may be defined to better suit your implementation of LaunchDarkly.
+By default, `gb-find-code-refs` will only match flag keys surrounded by single quotes ('), double quotes ("), or backticks (`). This default behavior may be disabled and additional delimiters may be defined to better suit your implementation.
 
 The following example disables delimiters, and instructs `gb-find-code-refs` to only match flag keys surrounded by carets (< and >)
 

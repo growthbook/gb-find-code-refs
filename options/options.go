@@ -15,16 +15,15 @@ import (
 )
 
 type Options struct {
-	Branch              string `mapstructure:"branch"`
-	Dir                 string `mapstructure:"dir" yaml:"-"`
-	OutDir              string `mapstructure:"outDir"`
-	Revision            string `mapstructure:"revision"`
-	FlagsPath           string `mapstructure:"flagsPath"`
-	ContextLines        int    `mapstructure:"contextLines"`
-	Lookback            int    `mapstructure:"lookback"`
-	AllowTags           bool   `mapstructure:"allowTags"`
-	Debug               bool   `mapstructure:"debug"`
-	IgnoreServiceErrors bool   `mapstructure:"ignoreServiceErrors"`
+	Branch       string `mapstructure:"branch"`
+	Dir          string `mapstructure:"dir" yaml:"-"`
+	OutDir       string `mapstructure:"outDir"`
+	Revision     string `mapstructure:"revision"`
+	FlagsPath    string `mapstructure:"flagsPath"`
+	ContextLines int    `mapstructure:"contextLines"`
+	Lookback     int    `mapstructure:"lookback"`
+	AllowTags    bool   `mapstructure:"allowTags"`
+	Debug        bool   `mapstructure:"debug"`
 
 	// The following options can only be configured via YAML configuration
 

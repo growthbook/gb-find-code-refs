@@ -261,7 +261,7 @@ func Test_aggregateHunksForFlag(t *testing.T) {
 			for i := range tt.lines {
 				lineNumbers = append(lineNumbers, i)
 			}
-			got := f.aggregateHunksForFlag("default", testFlagKey, tt.matcher, lineNumbers)
+			got := f.aggregateHunksForFlag(testFlagKey, tt.matcher, lineNumbers)
 			require.Equal(t, tt.want, got)
 		})
 	}

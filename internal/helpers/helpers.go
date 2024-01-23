@@ -1,12 +1,7 @@
 package helpers
 
 import (
-	"fmt"
-	"os"
 	"time"
-
-	"github.com/growthbook/gb-find-code-refs/internal/gb"
-	"github.com/growthbook/gb-find-code-refs/internal/log"
 )
 
 func Dedupe(s []string) []string {
@@ -26,15 +21,4 @@ func Dedupe(s []string) []string {
 
 func MakeTimestamp() int64 {
 	return time.Now().UnixNano() / int64(time.Millisecond)
-}
-
-func FatalServiceError(err error, ignoreServiceErrors bool) {
-	if gb.IsTransient(err) {
-		if ignoreServiceErrors {
-			log.Error.Fatal(fmt.Errorf("%w\n Ignoring error and exiting", err))
-			os.Exit(0)
-		}
-		err = fmt.Errorf("%w\n Add the --ignoreServiceErrors flag to ignore this error", err)
-	}
-	log.Error.Fatal(err)
 }

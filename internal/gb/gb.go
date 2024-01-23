@@ -19,10 +19,6 @@ type ConfigurationError struct {
 	error
 }
 
-func newConfigurationError(e string) ConfigurationError {
-	return ConfigurationError{errors.New((e))}
-}
-
 var (
 	NotFoundErr = errors.New("not found")
 )
@@ -127,7 +123,6 @@ type ExtinctionRep struct {
 	Revision string `json:"revision"`
 	Message  string `json:"message"`
 	Time     int64  `json:"time"`
-	ProjKey  string `json:"projKey"`
 	FlagKey  string `json:"flagKey"`
 }
 

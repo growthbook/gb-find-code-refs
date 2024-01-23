@@ -25,7 +25,7 @@ func NewMultiProjectMatcher(opts options.Options, dir string, flagKeys []string)
 		log.Error.Fatalf("failed to generate aliases: %s", err)
 	}
 
-	elements = append(elements, NewElementMatcher("default", "", delimiters, projectFlags, aliasesByFlagKey))
+	elements = append(elements, NewElementMatcher("", delimiters, projectFlags, aliasesByFlagKey))
 
 	return Matcher{
 		ctxLines: opts.ContextLines,
@@ -45,14 +45,8 @@ func (m Matcher) MatchElement(line, element string) bool {
 	return false
 }
 
-func (m Matcher) GetProjectElementMatcher(projectKey string) *ElementMatcher {
-	var elementMatcher ElementMatcher
-	for _, element := range m.Elements {
-		if element.ProjKey == projectKey {
-			elementMatcher = element
-			break
-		}
-	}
+func (m Matcher) GetElementMatcher() *ElementMatcher {
+	elementMatcher := m.Elements[0]
 	return &elementMatcher
 }
 

@@ -233,7 +233,7 @@ func (c Client) FindExtinctions(flags []string, matcher search.Matcher, lookback
 	}
 
 	// get matcher for project
-	elementMatcher := matcher.GetProjectElementMatcher("default")
+	elementMatcher := matcher.GetElementMatcher()
 	if elementMatcher == nil {
 		// This is actually a huge issue if it happens
 		panic(fmt.Sprintf("Matcher for project (%s) not found", "default"))
@@ -276,7 +276,7 @@ func (c Client) FindExtinctions(flags []string, matcher search.Matcher, lookback
 
 		for flag, removalCount := range flagMap {
 			if removalCount > 0 {
-				ret = append(ret, makeExtinctionRepFromCommit("default", flag, c.commit))
+				ret = append(ret, makeExtinctionRepFromCommit(flag, c.commit))
 				log.Debug.Printf("Found extinct flag: %s in project: %s", flag, "default")
 			} else {
 				// this flag was not removed in the current commit, so check for it again in the next commit
@@ -322,12 +322,11 @@ func printDebugStatement(fromFile, toFile diff.File) {
 	log.Debug.Printf("Scanning from file: %s and to file: %s", fromPath, toPath)
 }
 
-func makeExtinctionRepFromCommit(projectKey, flagKey string, commit *object.Commit) gb.ExtinctionRep {
+func makeExtinctionRepFromCommit(flagKey string, commit *object.Commit) gb.ExtinctionRep {
 	return gb.ExtinctionRep{
 		Revision: commit.Hash.String(),
 		Message:  commit.Message,
 		Time:     commit.Author.When.Unix() * 1000,
-		ProjKey:  projectKey,
 		FlagKey:  flagKey,
 	}
 }

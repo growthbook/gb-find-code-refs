@@ -16,14 +16,14 @@ func Test_buildFlagPatterns(t *testing.T) {
 
 func TestElementMatcher_FindAliases(t *testing.T) {
 	t.Run("overlapping aliases are reported separately", func(t *testing.T) {
-		matcher := NewElementMatcher("project", "", "", nil, map[string][]string{"flag": {"alias", "alias1"}})
+		matcher := NewElementMatcher("", "", nil, map[string][]string{"flag": {"alias", "alias1"}})
 		assert.ElementsMatch(t, []string{"alias", "alias1"}, matcher.FindAliases("alias1", "flag"))
 	})
 }
 
 func TestElementMatcher_FindMatches(t *testing.T) {
 	t.Run("overlapping flags are reported separately", func(t *testing.T) {
-		matcher := NewElementMatcher("project", "", "", []string{"flag", "flag1"}, nil)
+		matcher := NewElementMatcher("", "", []string{"flag", "flag1"}, nil)
 		assert.ElementsMatch(t, []string{"flag", "flag1"}, matcher.FindMatches("flag1"))
 	})
 }
@@ -40,21 +40,21 @@ func TestMatcher_MatchElement(t *testing.T) {
 			name:     "match found",
 			expected: true,
 			line:     "var flagKey = 'testflag'",
-			matcher:  Matcher{Elements: []ElementMatcher{NewElementMatcher("projKey", "", ",'\"", []string{"testflag"}, map[string][]string{"testflag": {"testFlag"}})}},
+			matcher:  Matcher{Elements: []ElementMatcher{NewElementMatcher("", ",'\"", []string{"testflag"}, map[string][]string{"testflag": {"testFlag"}})}},
 			flagKey:  "testflag",
 		},
 		{
 			name:     "no match found",
 			expected: false,
 			line:     "var flagKey = 'testflag'",
-			matcher:  Matcher{Elements: []ElementMatcher{NewElementMatcher("projKey", "", ",'\"", []string{"anotherflag"}, map[string][]string{"anotherflag": {"anotherFlag"}})}},
+			matcher:  Matcher{Elements: []ElementMatcher{NewElementMatcher("", ",'\"", []string{"anotherflag"}, map[string][]string{"anotherflag": {"anotherFlag"}})}},
 			flagKey:  "testflag",
 		},
 		{
 			name:     "doesn't match when delimiters aren't present",
 			expected: false,
 			line:     "var TEST_FLAG",
-			matcher:  Matcher{Elements: []ElementMatcher{NewElementMatcher("projKey", "", "'", []string{"TEST_FLAG"}, map[string][]string{"testflag": {}})}},
+			matcher:  Matcher{Elements: []ElementMatcher{NewElementMatcher("", "'", []string{"TEST_FLAG"}, map[string][]string{"testflag": {}})}},
 			flagKey:  "TEST_FLAG",
 		},
 		{
@@ -62,7 +62,7 @@ func TestMatcher_MatchElement(t *testing.T) {
 			name:     "matches without delimiters",
 			expected: true,
 			line:     "var TEST_FLAG",
-			matcher:  Matcher{Elements: []ElementMatcher{NewElementMatcher("projKey", "", "", []string{"TEST_FLAG"}, map[string][]string{"testflag": {}})}},
+			matcher:  Matcher{Elements: []ElementMatcher{NewElementMatcher("", "", []string{"TEST_FLAG"}, map[string][]string{"testflag": {}})}},
 			flagKey:  "TEST_FLAG",
 		},
 	}

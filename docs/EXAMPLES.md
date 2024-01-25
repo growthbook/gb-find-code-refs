@@ -12,8 +12,6 @@ gb-find-code-refs \
 
 ## Configuration with context lines
 
-https://docs.launchdarkly.com/home/code/code-references#configuring-context-lines
-
 ```bash
 gb-find-code-refs \
   --dir="/path/to/git/repo" \

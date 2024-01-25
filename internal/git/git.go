@@ -14,11 +14,10 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/format/diff"
 	object "github.com/go-git/go-git/v5/plumbing/object"
 
-	"github.com/launchdarkly/ld-find-code-refs/v2/internal/ld"
-	"github.com/launchdarkly/ld-find-code-refs/v2/options"
-	"github.com/launchdarkly/ld-find-code-refs/v2/search"
+	"github.com/growthbook/gb-find-code-refs/internal/gb"
+	"github.com/growthbook/gb-find-code-refs/search"
 
-	"github.com/launchdarkly/ld-find-code-refs/v2/internal/log"
+	"github.com/growthbook/gb-find-code-refs/internal/log"
 )
 
 type Client struct {
@@ -227,20 +226,20 @@ type CommitData struct {
 }
 
 // FindExtinctions searches commit history for flags that had references removed recently
-func (c Client) FindExtinctions(project options.Project, flags []string, matcher search.Matcher, lookback int) ([]ld.ExtinctionRep, error) {
+func (c Client) FindExtinctions(flags []string, matcher search.Matcher, lookback int) ([]gb.ExtinctionRep, error) {
 	commits, err := getCommits(c.workspace, lookback)
 	if err != nil {
 		return nil, err
 	}
 
 	// get matcher for project
-	elementMatcher := matcher.GetProjectElementMatcher(project.Key)
+	elementMatcher := matcher.GetElementMatcher()
 	if elementMatcher == nil {
 		// This is actually a huge issue if it happens
-		panic(fmt.Sprintf("Matcher for project (%s) not found", project.Key))
+		panic(fmt.Sprintf("Matcher for project (%s) not found", "default"))
 	}
 
-	ret := []ld.ExtinctionRep{}
+	ret := []gb.ExtinctionRep{}
 	for i, c := range commits[:len(commits)-1] {
 		log.Debug.Printf("Examining commit: %s", c.commit.Hash)
 		changes, err := commits[i+1].tree.Diff(c.tree)
@@ -256,7 +255,7 @@ func (c Client) FindExtinctions(project options.Project, flags []string, matcher
 		flagMap := getFlagDeltaMap(flags)
 
 		for _, filePatch := range patch.FilePatches() {
-			if !shouldScanFilePatch(project.Dir, filePatch) {
+			if !shouldScanFilePatch("", filePatch) {
 				continue
 			}
 
@@ -277,8 +276,8 @@ func (c Client) FindExtinctions(project options.Project, flags []string, matcher
 
 		for flag, removalCount := range flagMap {
 			if removalCount > 0 {
-				ret = append(ret, makeExtinctionRepFromCommit(project.Key, flag, c.commit))
-				log.Debug.Printf("Found extinct flag: %s in project: %s", flag, project.Key)
+				ret = append(ret, makeExtinctionRepFromCommit(flag, c.commit))
+				log.Debug.Printf("Found extinct flag: %s in project: %s", flag, "default")
 			} else {
 				// this flag was not removed in the current commit, so check for it again in the next commit
 				nextFlags = append(nextFlags, flag)
@@ -323,12 +322,11 @@ func printDebugStatement(fromFile, toFile diff.File) {
 	log.Debug.Printf("Scanning from file: %s and to file: %s", fromPath, toPath)
 }
 
-func makeExtinctionRepFromCommit(projectKey, flagKey string, commit *object.Commit) ld.ExtinctionRep {
-	return ld.ExtinctionRep{
+func makeExtinctionRepFromCommit(flagKey string, commit *object.Commit) gb.ExtinctionRep {
+	return gb.ExtinctionRep{
 		Revision: commit.Hash.String(),
 		Message:  commit.Message,
 		Time:     commit.Author.When.Unix() * 1000,
-		ProjKey:  projectKey,
 		FlagKey:  flagKey,
 	}
 }

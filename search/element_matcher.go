@@ -1,12 +1,11 @@
 package search
 
 import (
-	"github.com/launchdarkly/ld-find-code-refs/v2/internal/helpers"
+	"github.com/growthbook/gb-find-code-refs/internal/helpers"
 	ahocorasick "github.com/petar-dambovaliev/aho-corasick"
 )
 
 type ElementMatcher struct {
-	ProjKey                     string
 	Elements                    []string
 	Dir                         string
 	allElementAndAliasesMatcher ahocorasick.AhoCorasick
@@ -36,7 +35,7 @@ func (m ElementMatcher) FindAliases(line, element string) []string {
 	return aliasMatches
 }
 
-func NewElementMatcher(projKey, dir, delimiters string, elements []string, aliasesByElement map[string][]string) ElementMatcher {
+func NewElementMatcher(dir, delimiters string, elements []string, aliasesByElement map[string][]string) ElementMatcher {
 	matcherBuilder := ahocorasick.NewAhoCorasickBuilder(ahocorasick.Opts{DFA: true, MatchKind: ahocorasick.StandardMatch})
 
 	allFlagPatternsAndAliases := make([]string, 0)
@@ -71,7 +70,6 @@ func NewElementMatcher(projKey, dir, delimiters string, elements []string, alias
 
 	return ElementMatcher{
 		Elements:                    elements,
-		ProjKey:                     projKey,
 		Dir:                         dir,
 		matcherByElement:            flagMatcherByKey,
 		aliasMatcherByElement:       aliasMatcherByElement,

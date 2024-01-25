@@ -1,15 +1,15 @@
 package search
 
 import (
-	"github.com/launchdarkly/ld-find-code-refs/v2/flags"
-	"github.com/launchdarkly/ld-find-code-refs/v2/internal/ld"
-	"github.com/launchdarkly/ld-find-code-refs/v2/internal/log"
-	"github.com/launchdarkly/ld-find-code-refs/v2/options"
+	"github.com/growthbook/gb-find-code-refs/flags"
+	"github.com/growthbook/gb-find-code-refs/internal/gb"
+	"github.com/growthbook/gb-find-code-refs/internal/log"
+	"github.com/growthbook/gb-find-code-refs/options"
 )
 
 // Scan checks the configured directory for flags based on the options configured for Code References.
-func Scan(opts options.Options, repoParams ld.RepoParams, dir string) (Matcher, []ld.ReferenceHunksRep) {
-	flagKeys := flags.GetFlagKeys(opts, repoParams)
+func Scan(opts options.Options, dir string) (Matcher, []gb.ReferenceHunksRep) {
+	flagKeys := flags.GetFlagKeys(opts)
 	matcher := NewMultiProjectMatcher(opts, dir, flagKeys)
 
 	refs, err := SearchForRefs(dir, matcher)

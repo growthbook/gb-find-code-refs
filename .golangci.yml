@@ -1,4 +1,4 @@
-project_name: ld-find-code-refs
+project_name: gb-find-code-refs
 
 run:
   deadline: 120s

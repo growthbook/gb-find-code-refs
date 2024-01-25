@@ -3,10 +3,10 @@ package search
 import (
 	"strings"
 
-	"github.com/launchdarkly/ld-find-code-refs/v2/aliases"
-	"github.com/launchdarkly/ld-find-code-refs/v2/internal/helpers"
-	"github.com/launchdarkly/ld-find-code-refs/v2/internal/log"
-	"github.com/launchdarkly/ld-find-code-refs/v2/options"
+	"github.com/growthbook/gb-find-code-refs/aliases"
+	"github.com/growthbook/gb-find-code-refs/internal/helpers"
+	"github.com/growthbook/gb-find-code-refs/internal/log"
+	"github.com/growthbook/gb-find-code-refs/options"
 )
 
 type Matcher struct {
@@ -14,21 +14,18 @@ type Matcher struct {
 	ctxLines int
 }
 
-func NewMultiProjectMatcher(opts options.Options, dir string, flagKeys map[string][]string) Matcher {
-	elements := make([]ElementMatcher, 0, len(opts.Projects))
+func NewMultiProjectMatcher(opts options.Options, dir string, flagKeys []string) Matcher {
+	elements := make([]ElementMatcher, 0, 1)
 	delimiters := strings.Join(GetDelimiters(opts), "")
 
-	for _, project := range opts.Projects {
-		projectFlags := flagKeys[project.Key]
-		projectAliases := opts.Aliases
-		projectAliases = append(projectAliases, project.Aliases...)
-		aliasesByFlagKey, err := aliases.GenerateAliases(projectFlags, projectAliases, dir)
-		if err != nil {
-			log.Error.Fatalf("failed to generate aliases: %s for project: %s", err, project.Key)
-		}
-
-		elements = append(elements, NewElementMatcher(project.Key, project.Dir, delimiters, projectFlags, aliasesByFlagKey))
+	projectFlags := flagKeys
+	projectAliases := opts.Aliases
+	aliasesByFlagKey, err := aliases.GenerateAliases(projectFlags, projectAliases, dir)
+	if err != nil {
+		log.Error.Fatalf("failed to generate aliases: %s", err)
 	}
+
+	elements = append(elements, NewElementMatcher("", delimiters, projectFlags, aliasesByFlagKey))
 
 	return Matcher{
 		ctxLines: opts.ContextLines,
@@ -48,14 +45,8 @@ func (m Matcher) MatchElement(line, element string) bool {
 	return false
 }
 
-func (m Matcher) GetProjectElementMatcher(projectKey string) *ElementMatcher {
-	var elementMatcher ElementMatcher
-	for _, element := range m.Elements {
-		if element.ProjKey == projectKey {
-			elementMatcher = element
-			break
-		}
-	}
+func (m Matcher) GetElementMatcher() *ElementMatcher {
+	elementMatcher := m.Elements[0]
 	return &elementMatcher
 }
 

@@ -1,6 +1,6 @@
 ## Testing
 
-**Note: this file pertains to the testing of `ld-find-code-refs` for those actively developing it. It is not intended for testing the execution of the program against a real repository.**
+**Note: this file pertains to the testing of `gb-find-code-refs` for those actively developing it. It is not intended for testing the execution of the program against a real repository.**
 
 Development of this tool requires go version 1.20 or higher.
 

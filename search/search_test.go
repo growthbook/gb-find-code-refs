@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/launchdarkly/ld-find-code-refs/v2/internal/ld"
-	"github.com/launchdarkly/ld-find-code-refs/v2/internal/log"
+	"github.com/growthbook/gb-find-code-refs/internal/gb"
+	"github.com/growthbook/gb-find-code-refs/internal/log"
 	"github.com/stretchr/testify/require"
 )
 
@@ -41,7 +41,7 @@ var (
 		path:  "fileWithRefs",
 		lines: []string{testFlagKey, testFlagKey2, testFlagKey + testFlagKey2, testFlagAlias, testFlag2Alias},
 	}
-	testResultHunks = []ld.HunkRep{
+	testResultHunks = []gb.HunkRep{
 		makeHunk(1, testFlagKey),
 		*withAliases(makeHunkPtr(3, testFlagKey+testFlagKey2, testFlagAlias), testFlagAlias), //combined
 		*withFlagKey(makeHunkPtr(2, testFlagKey2, testFlagKey+testFlagKey2), testFlagKey2),   //combined
@@ -58,14 +58,14 @@ func Test_hunkForLine(t *testing.T) {
 		lines   []string
 		flagKey string
 		matcher Matcher
-		want    *ld.HunkRep
+		want    *gb.HunkRep
 	}{
 		{
 			name: "does not match flag flag key without delimiters",
 			matcher: Matcher{
 				ctxLines: 0,
 				Elements: []ElementMatcher{
-					NewElementMatcher("my-project", ``, `"`, []string{testFlagKey}, nil),
+					NewElementMatcher(``, `"`, []string{testFlagKey}, nil),
 				},
 			},
 			lineNum: 0,
@@ -78,7 +78,7 @@ func Test_hunkForLine(t *testing.T) {
 			matcher: Matcher{
 				ctxLines: 0,
 				Elements: []ElementMatcher{
-					NewElementMatcher("my-project", ``, `"`, []string{testFlagKey}, nil),
+					NewElementMatcher(``, `"`, []string{testFlagKey}, nil),
 				},
 			},
 			lineNum: 0,
@@ -91,7 +91,7 @@ func Test_hunkForLine(t *testing.T) {
 			matcher: Matcher{
 				ctxLines: -1,
 				Elements: []ElementMatcher{
-					NewElementMatcher("my-project", ``, ``, []string{testFlagKey}, nil),
+					NewElementMatcher(``, ``, []string{testFlagKey}, nil),
 				},
 			},
 			lineNum: 0,
@@ -104,7 +104,7 @@ func Test_hunkForLine(t *testing.T) {
 			matcher: Matcher{
 				ctxLines: -1,
 				Elements: []ElementMatcher{
-					NewElementMatcher("my-project", ``, ``, nil, testAliases),
+					NewElementMatcher(``, ``, nil, testAliases),
 				},
 			},
 			lineNum: 0,
@@ -117,7 +117,7 @@ func Test_hunkForLine(t *testing.T) {
 			matcher: Matcher{
 				ctxLines: -1,
 				Elements: []ElementMatcher{
-					NewElementMatcher("my-project", ``, ``, nil, testAliases),
+					NewElementMatcher(``, ``, nil, testAliases),
 				},
 			},
 			lineNum: 0,
@@ -130,7 +130,7 @@ func Test_hunkForLine(t *testing.T) {
 			matcher: Matcher{
 				ctxLines: 0,
 				Elements: []ElementMatcher{
-					NewElementMatcher("my-project", ``, ``, []string{testFlagKey}, nil),
+					NewElementMatcher(``, ``, []string{testFlagKey}, nil),
 				},
 			},
 			lineNum: 1,
@@ -143,7 +143,7 @@ func Test_hunkForLine(t *testing.T) {
 			matcher: Matcher{
 				ctxLines: 1,
 				Elements: []ElementMatcher{
-					NewElementMatcher("my-project", ``, ``, []string{testFlagKey}, nil),
+					NewElementMatcher(``, ``, []string{testFlagKey}, nil),
 				},
 			},
 			lineNum: 1,
@@ -156,7 +156,7 @@ func Test_hunkForLine(t *testing.T) {
 			matcher: Matcher{
 				ctxLines: 0,
 				Elements: []ElementMatcher{
-					NewElementMatcher("my-project", ``, ``, []string{testFlagKey}, nil),
+					NewElementMatcher(``, ``, []string{testFlagKey}, nil),
 				},
 			},
 			lineNum: 0,
@@ -169,7 +169,7 @@ func Test_hunkForLine(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			f := file{lines: tt.lines}
-			got := f.hunkForLine("default", tt.flagKey, tt.lineNum, tt.matcher)
+			got := f.hunkForLine(tt.flagKey, tt.lineNum, tt.matcher)
 			require.Equal(t, tt.want, got)
 		})
 	}
@@ -182,16 +182,16 @@ func Test_aggregateHunksForFlag(t *testing.T) {
 		matcher Matcher
 		lines   []string
 		aliases []string
-		want    []ld.HunkRep
+		want    []gb.HunkRep
 	}{
 		{
 			name: "does not set lines when context lines are disabled",
 			matcher: Matcher{
 				ctxLines: -1,
-				Elements: []ElementMatcher{NewElementMatcher("default", ``, defaultDelims, []string{testFlagKey}, nil)},
+				Elements: []ElementMatcher{NewElementMatcher(``, defaultDelims, []string{testFlagKey}, nil)},
 			},
 			lines: []string{delimitedTestFlagKey, delimitedTestFlagKey, delimitedTestFlagKey},
-			want: []ld.HunkRep{
+			want: []gb.HunkRep{
 				makeHunk(1),
 				makeHunk(2),
 				makeHunk(3),
@@ -201,9 +201,9 @@ func Test_aggregateHunksForFlag(t *testing.T) {
 			name: "combines adjacent hunks with no additional context lines",
 			matcher: Matcher{
 				ctxLines: 0,
-				Elements: []ElementMatcher{NewElementMatcher("default", ``, defaultDelims, []string{testFlagKey}, nil)},
+				Elements: []ElementMatcher{NewElementMatcher(``, defaultDelims, []string{testFlagKey}, nil)},
 			}, lines: []string{delimitedTestFlagKey, delimitedTestFlagKey, delimitedTestFlagKey},
-			want: []ld.HunkRep{
+			want: []gb.HunkRep{
 				makeHunk(1, delimitedTestFlagKey, delimitedTestFlagKey, delimitedTestFlagKey),
 			},
 		},
@@ -211,9 +211,9 @@ func Test_aggregateHunksForFlag(t *testing.T) {
 			name: "combines adjacent hunks",
 			matcher: Matcher{
 				ctxLines: 1,
-				Elements: []ElementMatcher{NewElementMatcher("default", ``, defaultDelims, []string{testFlagKey}, nil)},
+				Elements: []ElementMatcher{NewElementMatcher(``, defaultDelims, []string{testFlagKey}, nil)},
 			}, lines: []string{delimitedTestFlagKey, "", "", delimitedTestFlagKey, "", "", delimitedTestFlagKey},
-			want: []ld.HunkRep{
+			want: []gb.HunkRep{
 				makeHunk(1, delimitedTestFlagKey, "", "", delimitedTestFlagKey, "", "", delimitedTestFlagKey),
 			},
 		},
@@ -221,10 +221,10 @@ func Test_aggregateHunksForFlag(t *testing.T) {
 			name: "does not combine hunks with no overlap",
 			matcher: Matcher{
 				ctxLines: 1,
-				Elements: []ElementMatcher{NewElementMatcher("default", ``, defaultDelims, []string{testFlagKey}, nil)},
+				Elements: []ElementMatcher{NewElementMatcher(``, defaultDelims, []string{testFlagKey}, nil)},
 			},
 			lines: []string{delimitedTestFlagKey, "", "", "", delimitedTestFlagKey, "", "", "", delimitedTestFlagKey},
-			want: []ld.HunkRep{
+			want: []gb.HunkRep{
 				makeHunk(1, delimitedTestFlagKey, ""),
 				makeHunk(4, "", delimitedTestFlagKey, ""),
 				makeHunk(8, "", delimitedTestFlagKey),
@@ -234,10 +234,10 @@ func Test_aggregateHunksForFlag(t *testing.T) {
 			name: "combines overlapping hunks",
 			matcher: Matcher{
 				ctxLines: 1,
-				Elements: []ElementMatcher{NewElementMatcher("default", ``, defaultDelims, []string{testFlagKey}, nil)},
+				Elements: []ElementMatcher{NewElementMatcher(``, defaultDelims, []string{testFlagKey}, nil)},
 			},
 			lines: []string{delimitedTestFlagKey, "", delimitedTestFlagKey, "", delimitedTestFlagKey},
-			want: []ld.HunkRep{
+			want: []gb.HunkRep{
 				makeHunk(1, delimitedTestFlagKey, "", delimitedTestFlagKey, "", delimitedTestFlagKey),
 			},
 		},
@@ -245,10 +245,10 @@ func Test_aggregateHunksForFlag(t *testing.T) {
 			name: "combines multiple types of overlaps",
 			matcher: Matcher{
 				ctxLines: 1,
-				Elements: []ElementMatcher{NewElementMatcher("default", ``, defaultDelims, []string{testFlagKey}, nil)},
+				Elements: []ElementMatcher{NewElementMatcher(``, defaultDelims, []string{testFlagKey}, nil)},
 			},
 			lines: []string{delimitedTestFlagKey, "", delimitedTestFlagKey, "", delimitedTestFlagKey},
-			want: []ld.HunkRep{
+			want: []gb.HunkRep{
 				makeHunk(1, delimitedTestFlagKey, "", delimitedTestFlagKey, "", delimitedTestFlagKey),
 			},
 		},
@@ -261,7 +261,7 @@ func Test_aggregateHunksForFlag(t *testing.T) {
 			for i := range tt.lines {
 				lineNumbers = append(lineNumbers, i)
 			}
-			got := f.aggregateHunksForFlag("default", testFlagKey, tt.matcher, lineNumbers)
+			got := f.aggregateHunksForFlag(testFlagKey, tt.matcher, lineNumbers)
 			require.Equal(t, tt.want, got)
 		})
 	}
@@ -270,59 +270,59 @@ func Test_aggregateHunksForFlag(t *testing.T) {
 func Test_mergeHunks(t *testing.T) {
 	tests := []struct {
 		name  string
-		hunk1 ld.HunkRep
-		hunk2 ld.HunkRep
-		want  []ld.HunkRep
+		hunk1 gb.HunkRep
+		hunk2 gb.HunkRep
+		want  []gb.HunkRep
 	}{
 		{
 			name:  "combine adjacent hunks",
 			hunk1: makeHunk(1, "a", "b", "c"),
 			hunk2: makeHunk(4, "d", "e", "f"),
-			want:  []ld.HunkRep{makeHunk(1, "a", "b", "c", "d", "e", "f")},
+			want:  []gb.HunkRep{makeHunk(1, "a", "b", "c", "d", "e", "f")},
 		},
 		{
 			name:  "combine overlapping hunks",
 			hunk1: makeHunk(1, "a", "b", "c"),
 			hunk2: makeHunk(3, "c", "d", "e"),
-			want:  []ld.HunkRep{makeHunk(1, "a", "b", "c", "d", "e")},
+			want:  []gb.HunkRep{makeHunk(1, "a", "b", "c", "d", "e")},
 		},
 		{
 			name:  "combine overlapping hunks provided in the wrong order",
 			hunk1: makeHunk(3, "c", "d", "e"),
 			hunk2: makeHunk(1, "a", "b", "c"),
-			want:  []ld.HunkRep{makeHunk(1, "a", "b", "c", "d", "e")},
+			want:  []gb.HunkRep{makeHunk(1, "a", "b", "c", "d", "e")},
 		},
 		{
 			name:  "combine same hunk",
 			hunk1: makeHunk(1, "a", "b", "c"),
 			hunk2: makeHunk(1, "a", "b", "c"),
-			want:  []ld.HunkRep{makeHunk(1, "a", "b", "c")},
+			want:  []gb.HunkRep{makeHunk(1, "a", "b", "c")},
 		},
 		{
 			name:  "combine subset hunk",
 			hunk1: makeHunk(1, "a", "b", "c", "d", "e"),
 			hunk2: makeHunk(3, "c", "d"),
-			want:  []ld.HunkRep{makeHunk(1, "a", "b", "c", "d", "e")},
+			want:  []gb.HunkRep{makeHunk(1, "a", "b", "c", "d", "e")},
 		},
 		{
 			// if the hunks do not overlap and are not adjacent, expect just the first hunk to be returned
 			name:  "do not combine disjoint hunks",
 			hunk1: makeHunk(1, "a", "b", "c"),
 			hunk2: makeHunk(5, "e", "f", "g"),
-			want:  []ld.HunkRep{makeHunk(1, "a", "b", "c"), makeHunk(5, "e", "f", "g")},
+			want:  []gb.HunkRep{makeHunk(1, "a", "b", "c"), makeHunk(5, "e", "f", "g")},
 		},
 		{
 			// if the hunks are provided out of order, expect both hunks to be returned in the correct order
 			name:  "do not combine hunks provided out of order",
 			hunk1: makeHunk(5, "e", "f", "g"),
 			hunk2: makeHunk(1, "a", "b", "c"),
-			want:  []ld.HunkRep{makeHunk(1, "a", "b", "c"), makeHunk(5, "e", "f", "g")},
+			want:  []gb.HunkRep{makeHunk(1, "a", "b", "c"), makeHunk(5, "e", "f", "g")},
 		},
 		{
 			name:  "does not combine with no context lines",
 			hunk1: makeHunk(1),
 			hunk2: makeHunk(2),
-			want:  []ld.HunkRep{makeHunk(1), makeHunk(2)},
+			want:  []gb.HunkRep{makeHunk(1), makeHunk(2)},
 		},
 	}
 
@@ -339,7 +339,7 @@ func Test_toHunks(t *testing.T) {
 	matcher := Matcher{
 		ctxLines: 0,
 		Elements: []ElementMatcher{
-			NewElementMatcher("default", "", "", []string{testFlagKey, testFlagKey2}, testAliases),
+			NewElementMatcher("", "", []string{testFlagKey, testFlagKey2}, testAliases),
 		},
 	}
 	got := f.toHunks(matcher)
@@ -349,7 +349,7 @@ func Test_toHunks(t *testing.T) {
 	emptyMatcher := Matcher{
 		ctxLines: 0,
 		Elements: []ElementMatcher{
-			NewElementMatcher("default", "", "", nil, nil),
+			NewElementMatcher("", "", nil, nil),
 		},
 	}
 	require.Nil(t, f.toHunks(emptyMatcher))
@@ -362,7 +362,7 @@ func Test_processFiles(t *testing.T) {
 	f2 := file{path: f.path + "2", lines: linesCopy}
 
 	files := make(chan file, 3)
-	references := make(chan ld.ReferenceHunksRep, 3)
+	references := make(chan gb.ReferenceHunksRep, 3)
 	files <- f
 	files <- f2
 	files <- file{path: "no-refs"}
@@ -371,7 +371,7 @@ func Test_processFiles(t *testing.T) {
 		ctxLines: 0,
 	}
 	matcher.Elements = append(matcher.Elements,
-		NewElementMatcher("default", "", "", []string{testFlagKey, testFlagKey2}, testAliases),
+		NewElementMatcher("", "", []string{testFlagKey, testFlagKey2}, testAliases),
 	)
 	go processFiles(context.Background(), files, references, matcher)
 	totalRefs := 0
@@ -386,12 +386,12 @@ func Test_processFiles(t *testing.T) {
 
 func Test_SearchForRefs(t *testing.T) {
 	os.Symlink("testdata/fileWithRefs", "testdata/symlink")
-	want := []ld.ReferenceHunksRep{{Path: testFile.path}}
+	want := []gb.ReferenceHunksRep{{Path: testFile.path}}
 	matcher := Matcher{
 		ctxLines: 0,
 	}
 	matcher.Elements = append(matcher.Elements,
-		NewElementMatcher("default", "", "", []string{testFlagKey, testFlagKey2}, nil),
+		NewElementMatcher("", "", []string{testFlagKey, testFlagKey2}, nil),
 	)
 	t.Cleanup(func() { os.Remove("testdata/symlink") })
 	got, err := SearchForRefs("testdata", matcher)
@@ -434,29 +434,28 @@ func Test_truncateLine(t *testing.T) {
 	}
 }
 
-func withAliases(hunk *ld.HunkRep, aliases ...string) *ld.HunkRep {
+func withAliases(hunk *gb.HunkRep, aliases ...string) *gb.HunkRep {
 	hunk.Aliases = aliases
 	return hunk
 }
 
-func withFlagKey(hunk *ld.HunkRep, flagKey string) *ld.HunkRep {
+func withFlagKey(hunk *gb.HunkRep, flagKey string) *gb.HunkRep {
 	hunk.FlagKey = flagKey
 	return hunk
 }
 
-func makeHunkPtr(startingLineNumber int, lines ...string) *ld.HunkRep {
+func makeHunkPtr(startingLineNumber int, lines ...string) *gb.HunkRep {
 	hunk := makeHunk(startingLineNumber, lines...)
 	return &hunk
 }
 
-func makeHunk(startingLineNumber int, lines ...string) ld.HunkRep {
+func makeHunk(startingLineNumber int, lines ...string) gb.HunkRep {
 	hunkLines := ""
 	if len(lines) != 0 {
 		hunkLines = strings.Join(lines, "\n")
 	}
 
-	return ld.HunkRep{
-		ProjKey:            "default",
+	return gb.HunkRep{
 		FlagKey:            testFlagKey,
 		StartingLineNumber: startingLineNumber,
 		Lines:              hunkLines,

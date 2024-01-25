@@ -20,7 +20,7 @@ func main() {
 		log.Error.Fatal(err)
 	}
 	log.Init(opts.Debug)
-	coderefs.Run(opts, true)
+	coderefs.Run(opts, false)
 }
 
 // mergeGithubOptions sets inferred options from the github actions environment, when available

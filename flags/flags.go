@@ -3,7 +3,6 @@ package flags
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"os"
 
 	"github.com/growthbook/gb-find-code-refs/internal/log"
@@ -48,20 +47,17 @@ func filterShortFlagKeys(flags []string) (filtered []string, omitted []string) {
 
 func getFlags(flagsPath string) ([]string, error) {
 	jsonFile, err := os.Open(flagsPath)
-
 	if err != nil {
 		return nil, err
 	}
-
-	byteValue, err := io.ReadAll(jsonFile)
-
-	if err != nil {
-		return nil, err
-	}
+	defer jsonFile.Close()
 
 	var flags []string
 
-	json.Unmarshal(byteValue, &flags)
+	err = json.NewDecoder(jsonFile).Decode(&flags)
+	if err != nil {
+		return nil, err
+	}
 
 	return flags, nil
 }

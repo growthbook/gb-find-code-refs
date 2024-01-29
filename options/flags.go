@@ -26,7 +26,7 @@ leave the repository in a detached HEAD state.`,
 		name:         "contextLines",
 		short:        "C",
 		defaultValue: 2,
-		usage:        `The number of context lines to include with each code reference. If 0, only the lines containing flag references will be sent. If > 0, will include that number of context lines above and below the flag reference. A maximum of 5 context lines may be provided. (default 2)`,
+		usage:        `The number of context lines to include with each code reference. If 0, only the lines containing flag references will be sent. If > 0, will include that number of context lines above and below the flag reference. A maximum of 5 context lines may be provided.`,
 	},
 	{
 		name:         "debug",

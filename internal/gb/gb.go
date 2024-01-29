@@ -102,6 +102,7 @@ func (r ReferenceHunksRep) toRecords() []HunkRep {
 }
 
 type HunkRep struct {
+	FilePath           string   `json:"filePath"`
 	StartingLineNumber int      `json:"startingLineNumber"`
 	Lines              string   `json:"lines,omitempty"`
 	FlagKey            string   `json:"flagKey"`

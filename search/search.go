@@ -73,6 +73,7 @@ func (f file) hunkForLine(flagKey string, lineNum int, matcher Matcher) *gb.Hunk
 	contentHash := getContentHash(lines)
 
 	ret := gb.HunkRep{
+		FilePath:           f.path,
 		FlagKey:            flagKey,
 		StartingLineNumber: startingLineNum + 1,
 		Lines:              lines,

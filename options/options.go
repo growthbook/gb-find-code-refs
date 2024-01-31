@@ -20,6 +20,7 @@ type Options struct {
 	OutDir       string `mapstructure:"outDir"`
 	Revision     string `mapstructure:"revision"`
 	FlagsPath    string `mapstructure:"flagsPath"`
+	OutFile      string `mapstructure:"outFile"`
 	ContextLines int    `mapstructure:"contextLines"`
 	Lookback     int    `mapstructure:"lookback"`
 	AllowTags    bool   `mapstructure:"allowTags"`

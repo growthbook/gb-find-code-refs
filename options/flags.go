@@ -64,4 +64,10 @@ whether a feature flag was removed from code. May be set to 0 to disabled this f
 		defaultValue: "",
 		usage:        "Required path to a JSON file containing a list of flag keys (array of strings). The scanner will search for references to the flags in this file.",
 	},
+	{
+		name:         "outFile",
+		short:        "O",
+		defaultValue: "",
+		usage:        "Filename for the output JSON file. If not provided, will use branch name with a .json extension prepended with 'coderefs_'.",
+	},
 }

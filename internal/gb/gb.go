@@ -39,7 +39,7 @@ func (b BranchRep) TotalHunkCount() int {
 	return count
 }
 
-func (b BranchRep) WriteToJSON(outDir, sha string) (path string, err error) {
+func (b BranchRep) WriteToJSON(outDir, sha string, outFile string) (path string, err error) {
 	// Try to create a filename with a shortened sha, but if the sha is too short for some unexpected reason, use the branch name instead
 	var tag string
 	if len(sha) >= 7 {
@@ -53,8 +53,13 @@ func (b BranchRep) WriteToJSON(outDir, sha string) (path string, err error) {
 		return "", fmt.Errorf("invalid outDir '%s': %w", outDir, err)
 	}
 
-	// replace any forward slashes in filename
-	filename := strings.ReplaceAll(fmt.Sprintf("coderefs_%s.json", tag), "/", "_")
+	var filename string
+	if outFile != "" {
+		filename = outFile
+	} else {
+		// replace any forward slashes in filename
+		filename = strings.ReplaceAll(fmt.Sprintf("coderefs_%s.json", tag), "/", "_")
+	}
 	path = filepath.Join(absPath, filename)
 
 	f, err := os.Create(path)

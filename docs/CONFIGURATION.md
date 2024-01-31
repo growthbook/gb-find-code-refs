@@ -48,6 +48,8 @@ Flags:
 
   -o, --outDir string              If provided, will output the JSON file containing all code references to this directory. Otherwise, will output JSON file to current working directory.
 
+  -O, --outFile string             Filename for the output JSON file. If not provided, will use branch name with a .json extension prepended with 'coderefs_'.
+
   -R, --revision string            Use this option to scan non-git codebases. The current revision of the repository to be scanned. If set, the version string for the scanned repository will not be inferred. The "branch" option is required when "revision" is set.
 
   -v, --version                    version for gb-find-code-refs

@@ -21,6 +21,7 @@ type Options struct {
 	Revision     string `mapstructure:"revision"`
 	FlagsPath    string `mapstructure:"flagsPath"`
 	OutFile      string `mapstructure:"outFile"`
+	RepoName     string `mapstructure:"repoName"`
 	ContextLines int    `mapstructure:"contextLines"`
 	Lookback     int    `mapstructure:"lookback"`
 	AllowTags    bool   `mapstructure:"allowTags"`

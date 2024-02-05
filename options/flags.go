@@ -70,4 +70,10 @@ whether a feature flag was removed from code. May be set to 0 to disabled this f
 		defaultValue: "",
 		usage:        "Filename for the output JSON file. If not provided, will use branch name with a .json extension prepended with 'coderefs_'.",
 	},
+	{
+		name:         "repoName",
+		short:        "n",
+		defaultValue: "",
+		usage:        "Repository name. If not provided, will be omitted from output JSON file.",
+	},
 }

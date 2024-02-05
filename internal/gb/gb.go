@@ -13,6 +13,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 
 	"github.com/growthbook/gb-find-code-refs/internal/validation"
+	"github.com/growthbook/gb-find-code-refs/options"
 )
 
 type ConfigurationError struct {
@@ -39,7 +40,17 @@ func (b BranchRep) TotalHunkCount() int {
 	return count
 }
 
-func (b BranchRep) WriteToJSON(outDir, sha string, outFile string) (path string, err error) {
+type OutputJSON struct {
+	Branch   string    `json:"branch"`
+	RepoName string    `json:"repoName,omitempty"`
+	Refs     []HunkRep `json:"refs"`
+}
+
+func (b BranchRep) WriteToJSON(outDir string, opts options.Options) (path string, err error) {
+	sha := opts.Revision
+	outFile := opts.OutFile
+	repoName := opts.RepoName
+
 	// Try to create a filename with a shortened sha, but if the sha is too short for some unexpected reason, use the branch name instead
 	var tag string
 	if len(sha) >= 7 {
@@ -85,7 +96,13 @@ func (b BranchRep) WriteToJSON(outDir, sha string, outFile string) (path string,
 		return false
 	})
 
-	r, err := json.Marshal(records)
+	output := OutputJSON{
+		Branch:   b.Name,
+		RepoName: repoName,
+		Refs:     records,
+	}
+
+	r, err := json.Marshal(output)
 	if err != nil {
 		return "", err
 	}

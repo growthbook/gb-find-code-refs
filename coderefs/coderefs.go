@@ -64,7 +64,7 @@ func generateHunkOutput(opts options.Options, matcher search.Matcher, branch gb.
 		outDir = "."
 	}
 
-	outPath, err := branch.WriteToJSON(outDir, opts.Revision, opts.OutFile)
+	outPath, err := branch.WriteToJSON(outDir, opts)
 	if err != nil {
 		log.Error.Fatalf("error writing code references to csv: %s", err)
 	}

@@ -42,6 +42,8 @@ Flags:
 
   -f, --flagsPath string           Required path to a JSON file containing a list of flag keys (array of strings). The scanner will search for references to the flags in this file.
 
+  -n, --repoName string            Repository name. If not provided, will be omitted from output JSON file.
+
   -h, --help                       help for gb-find-code-refs
 
   -l, --lookback int               Sets the number of git commits to search in history for whether a feature flag was removed from code. May be set to 0 to disabled this feature. Setting this option to a high value will increase search time. (default 10)

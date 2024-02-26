@@ -8,6 +8,15 @@ The command line program may be run manually, and executed in an environment of 
 
 We recommend incorporating `gb-find-code-refs` into your CI/CD build process. `gb-find-code-refs` should run whenever a commit is pushed to your repository.
 
+## Example usage
+
+```bash
+# run CLI utility against codebase with feature flags provided in flags.json, repo name set to growthbook/growthbook
+$ ./gb-find-code-refs -d ../growthbook -f ../flags.json -n growthbook/growthbook
+# post results to an endpoint, such as growthbook's code references endpoint
+$ curl -XPOST -H "Authorization: Bearer ..." -H "Content-Type: application/json" your-growthbook-host/api/v1/code-refs -d @coderefs_main.json
+```
+
 ### Prerequisites
 
 If you are scanning a git repository, `gb-find-code-refs` requires git (tested with version 2.21.0) to be installed on the system path.

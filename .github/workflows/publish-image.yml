@@ -1,4 +1,4 @@
-name: Publish image
+name: Publish image and binaries
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: Image tag to publish
+        description: Tag to publish (image tag and GitHub release)
         required: true
 
 permissions:
@@ -36,3 +36,31 @@ jobs:
           tags: ghcr.io/growthbook/gb-find-code-refs:${{ inputs.tag || github.ref_name }}
       # The digest is what coderefs-standalone-action pins, so surface it on the run.
       - run: echo "Published \`ghcr.io/growthbook/gb-find-code-refs@${{ steps.build.outputs.digest }}\`" >> "$GITHUB_STEP_SUMMARY"
+
+  # Bare binaries for runners that can't start containers (e.g. ARC in containerMode: kubernetes).
+  release-binaries:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
+        with:
+          go-version-file: go.mod
+      - name: Build
+        run: |
+          mkdir dist
+          for target in linux/amd64 linux/arm64 darwin/amd64 darwin/arm64; do
+            os=${target%/*} arch=${target#*/}
+            CGO_ENABLED=0 GOOS=$os GOARCH=$arch go build -mod=vendor -trimpath -ldflags="-s -w" -o out/gb-find-code-refs ./cmd/gb-find-code-refs
+            tar -czf "dist/gb-find-code-refs_${TAG}_${os}_${arch}.tar.gz" -C out gb-find-code-refs
+          done
+          (cd dist && sha256sum *.tar.gz > checksums.txt)
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create "$TAG" --target "$GITHUB_SHA" --title "$TAG" --notes "" dist/*
+      # coderefs-standalone-action pins these checksums, so surface them on the run.
+      - run: (echo '```'; cat dist/checksums.txt; echo '```') >> "$GITHUB_STEP_SUMMARY"

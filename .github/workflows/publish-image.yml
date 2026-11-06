@@ -39,6 +39,7 @@ jobs:
 
   # Bare binaries for runners that can't start containers (e.g. ARC in containerMode: kubernetes).
   release-binaries:
+    needs: publish
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -49,6 +50,12 @@ jobs:
       - uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
         with:
           go-version-file: go.mod
+      # gh ignores --target for an existing tag, so refuse to attach binaries built from another commit.
+      - name: Check tag matches commit
+        run: |
+          if git fetch --depth=1 origin "refs/tags/$TAG:refs/tags/$TAG" 2>/dev/null; then
+            [ "$(git rev-parse "$TAG^{commit}")" = "$GITHUB_SHA" ] || { echo "::error::Tag $TAG does not point at $GITHUB_SHA"; exit 1; }
+          fi
       - name: Build
         run: |
           mkdir dist
